@@ -1,0 +1,13 @@
+﻿{% extends 'shared/base_bootstrap5.html' %}
+{% block content %}
+<table class="table table-striped">
+  <thead>
+    <tr>{% for col in headers %}<th>{{ col }}</th>{% endfor %}</tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+      <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

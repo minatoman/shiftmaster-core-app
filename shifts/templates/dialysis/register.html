@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>透析患者・スタッフ登録</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center"><span class="text-danger">📋 透析患者・スタッフ登録</span></h2>
+
+    <!-- 患者フォーム -->
+    <h4 class="text-primary">🔗 患者</h4>
+    <form method="POST">
+        {% csrf_token %}
+        {% for form in pf.forms %}
+            <div class="card p-3 mb-3">
+                {{ form.non_field_errors }}
+                <div class="mb-2">
+                    <label class="form-label">氏名：</label>{{ form.name }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">透析時間：</label>{{ form.dialysis_time }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">性別：</label>{{ form.gender }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">地域：</label>{{ form.area }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">備考：</label>{{ form.remarks }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">日付：</label>{{ form.date }}
+                </div>
+            </div>
+        {% endfor %}
+
+        <!-- スタッフフォーム -->
+        <h4 class="text-success">👩‍⚕️ スタッフ</h4>
+        {% for form in sf.forms %}
+            <div class="card p-3 mb-3">
+                {{ form.non_field_errors }}
+                <div class="mb-2">
+                    <label class="form-label">氏名：</label>{{ form.name }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">職種：</label>{{ form.role }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">備考：</label>{{ form.notes }}
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">日付：</label>{{ form.date }}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg mt-3">保存</button>
+            <a href="{% url 'shifts:dialysis_daily' %}" class="btn btn-secondary btn-lg mt-3">一覧に戻る</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+
+
+

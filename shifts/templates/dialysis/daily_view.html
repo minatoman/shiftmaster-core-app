@@ -1,0 +1,19 @@
+<!-- daily_view.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">🩺 透析日誌一覧</h2>
+  <table class="table table-bordered">
+    <thead><tr><th>名前</th><th>透析時間</th><th>性別</th><th>地域</th><th>備考</th></tr></thead>
+    <tbody>
+      {% for p in patients %}
+      <tr><td>{{ p.name }}</td><td>{{ p.dialysis_time }}</td><td>{{ p.gender }}</td><td>{{ p.area }}</td><td>{{ p.remarks }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+
+
+

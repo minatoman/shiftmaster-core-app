@@ -1,0 +1,603 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}{{ title }} - ShiftMaster{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.form-section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-section h6 {
+    color: #495057;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.request-type-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.request-type-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.request-type-card:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.request-type-card.selected {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+.request-type-card .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+}
+
+.request-type-card.selected .icon {
+    color: #007bff;
+}
+
+.request-type-card h6 {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.request-type-card.selected h6 {
+    color: #007bff;
+}
+
+.priority-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.priority-option {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    background: white;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.priority-option:hover,
+.priority-option.selected {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+}
+
+.priority-option.high {
+    border-color: #dc3545;
+    color: #dc3545;
+}
+
+.priority-option.high:hover,
+.priority-option.high.selected {
+    background: #dc3545;
+    color: white;
+}
+
+.priority-option.medium {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.priority-option.medium:hover,
+.priority-option.medium.selected {
+    background: #ffc107;
+    color: white;
+}
+
+.priority-option.low {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.priority-option.low:hover,
+.priority-option.low.selected {
+    background: #28a745;
+    color: white;
+}
+
+.date-picker-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.date-picker-group .form-control {
+    flex: 1;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.quick-action-btn {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    background: white;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.quick-action-btn:hover {
+    background: #e9ecef;
+}
+
+.char-counter {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+.char-counter.warning {
+    color: #ffc107;
+}
+
+.char-counter.danger {
+    color: #dc3545;
+}
+
+.form-preview {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .form-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .request-type-selector {
+        grid-template-columns: 1fr;
+    }
+    
+    .date-picker-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .priority-selector {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="form-container">
+        <!-- ヘッダー -->
+        <div class="text-center mb-4">
+            <h2 class="mb-2">
+                <i class="bi bi-file-earmark-plus"></i> {{ title }}
+            </h2>
+            <p class="text-muted">シフトに関する申請を提出できます</p>
+        </div>
+
+        <div class="form-card">
+            <form method="post" id="requestForm">
+                {% csrf_token %}
+                
+                <!-- エラー表示 -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- 申請タイプ選択 -->
+                <div class="form-section">
+                    <h6><i class="bi bi-list-check"></i> 申請タイプ</h6>
+                    
+                    <div class="request-type-selector">
+                        <div class="request-type-card" data-type="shift_change">
+                            <div class="icon">
+                                <i class="bi bi-arrow-left-right"></i>
+                            </div>
+                            <h6>シフト変更</h6>
+                            <p class="small text-muted">担当シフトの変更を申請</p>
+                        </div>
+                        
+                        <div class="request-type-card" data-type="time_off">
+                            <div class="icon">
+                                <i class="bi bi-calendar-x"></i>
+                            </div>
+                            <h6>休暇申請</h6>
+                            <p class="small text-muted">有給休暇や特別休暇の申請</p>
+                        </div>
+                        
+                        <div class="request-type-card" data-type="overtime">
+                            <div class="icon">
+                                <i class="bi bi-clock-history"></i>
+                            </div>
+                            <h6>残業申請</h6>
+                            <p class="small text-muted">残業の事前申請</p>
+                        </div>
+                        
+                        <div class="request-type-card" data-type="schedule_request">
+                            <div class="icon">
+                                <i class="bi bi-calendar-plus"></i>
+                            </div>
+                            <h6>スケジュール希望</h6>
+                            <p class="small text-muted">勤務時間の希望を提出</p>
+                        </div>
+                    </div>
+                    
+                    {{ form.request_type|add_class:"form-select d-none" }}
+                    {% if form.request_type.errors %}
+                        <div class="text-danger small">{{ form.request_type.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- 基本情報 -->
+                <div class="form-section">
+                    <h6><i class="bi bi-info-circle"></i> 基本情報</h6>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">申請タイトル</label>
+                            {{ form.title|add_class:"form-control" }}
+                            <div class="form-text">申請内容を簡潔に入力してください</div>
+                            {% if form.title.errors %}
+                                <div class="text-danger small">{{ form.title.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">対象日 <span class="text-danger">*</span></label>
+                            {{ form.request_date|add_class:"form-control" }}
+                            
+                            <!-- クイックアクション -->
+                            <div class="quick-actions mt-2">
+                                <button type="button" class="quick-action-btn" data-days="0">今日</button>
+                                <button type="button" class="quick-action-btn" data-days="1">明日</button>
+                                <button type="button" class="quick-action-btn" data-days="7">来週</button>
+                                <button type="button" class="quick-action-btn" data-days="30">来月</button>
+                            </div>
+                            
+                            {% if form.request_date.errors %}
+                                <div class="text-danger small">{{ form.request_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 優先度設定 -->
+                <div class="form-section">
+                    <h6><i class="bi bi-flag"></i> 優先度</h6>
+                    
+                    <div class="priority-selector">
+                        <div class="priority-option low" data-priority="low">
+                            <i class="bi bi-check-circle"></i> 低
+                        </div>
+                        <div class="priority-option medium selected" data-priority="medium">
+                            <i class="bi bi-info-circle"></i> 中
+                        </div>
+                        <div class="priority-option high" data-priority="high">
+                            <i class="bi bi-exclamation-triangle"></i> 高
+                        </div>
+                    </div>
+                    
+                    {{ form.priority|add_class:"form-select d-none" }}
+                    {% if form.priority.errors %}
+                        <div class="text-danger small">{{ form.priority.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- 申請理由 -->
+                <div class="form-section">
+                    <h6><i class="bi bi-chat-text"></i> 申請理由 <span class="text-danger">*</span></h6>
+                    
+                    {{ form.reason|add_class:"form-control" }}
+                    <div class="char-counter" id="reasonCounter">0 / 1000文字</div>
+                    <div class="form-text">申請理由を詳しく記載してください。承認の判断材料となります。</div>
+                    {% if form.reason.errors %}
+                        <div class="text-danger small">{{ form.reason.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- シフト変更専用フィールド -->
+                <div class="form-section d-none" id="shiftChangeFields">
+                    <h6><i class="bi bi-arrow-left-right"></i> シフト変更詳細</h6>
+                    
+                    <div class="row g-3">
+                        {% if form.current_shift %}
+                        <div class="col-md-6">
+                            <label class="form-label">現在のシフト</label>
+                            {{ form.current_shift|add_class:"form-select" }}
+                            {% if form.current_shift.errors %}
+                                <div class="text-danger small">{{ form.current_shift.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if form.requested_shift %}
+                        <div class="col-md-6">
+                            <label class="form-label">希望するシフト</label>
+                            {{ form.requested_shift|add_class:"form-select" }}
+                            {% if form.requested_shift.errors %}
+                                <div class="text-danger small">{{ form.requested_shift.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 時間外勤務専用フィールド -->
+                <div class="form-section d-none" id="overtimeFields">
+                    <h6><i class="bi bi-clock-history"></i> 残業詳細</h6>
+                    
+                    <div class="row g-3">
+                        {% if form.overtime_start %}
+                        <div class="col-md-6">
+                            <label class="form-label">残業開始時間</label>
+                            {{ form.overtime_start|add_class:"form-control" }}
+                            {% if form.overtime_start.errors %}
+                                <div class="text-danger small">{{ form.overtime_start.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if form.overtime_end %}
+                        <div class="col-md-6">
+                            <label class="form-label">残業終了時間</label>
+                            {{ form.overtime_end|add_class:"form-control" }}
+                            {% if form.overtime_end.errors %}
+                                <div class="text-danger small">{{ form.overtime_end.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- プレビューエリア -->
+                <div class="form-preview d-none" id="formPreview">
+                    <h6><i class="bi bi-eye"></i> 申請内容プレビュー</h6>
+                    <div id="previewContent"></div>
+                </div>
+
+                <!-- 操作ボタン -->
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+                    <a href="{% url 'shifts:request_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> 戻る
+                    </a>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary" id="previewBtn">
+                            <i class="bi bi-eye"></i> プレビュー
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> 申請を提出
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 申請タイプ選択
+    const requestTypeCards = document.querySelectorAll('.request-type-card');
+    const requestTypeField = document.querySelector('select[name="request_type"]');
+    const shiftChangeFields = document.getElementById('shiftChangeFields');
+    const overtimeFields = document.getElementById('overtimeFields');
+    
+    requestTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // 他の選択を解除
+            requestTypeCards.forEach(c => c.classList.remove('selected'));
+            
+            // 現在の選択
+            this.classList.add('selected');
+            const type = this.dataset.type;
+            requestTypeField.value = type;
+            
+            // 専用フィールドの表示/非表示
+            shiftChangeFields.classList.add('d-none');
+            overtimeFields.classList.add('d-none');
+            
+            if (type === 'shift_change') {
+                shiftChangeFields.classList.remove('d-none');
+            } else if (type === 'overtime') {
+                overtimeFields.classList.remove('d-none');
+            }
+        });
+    });
+    
+    // 優先度選択
+    const priorityOptions = document.querySelectorAll('.priority-option');
+    const priorityField = document.querySelector('select[name="priority"]');
+    
+    priorityOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            priorityOptions.forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            priorityField.value = this.dataset.priority;
+        });
+    });
+    
+    // クイック日付設定
+    const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+    const dateField = document.querySelector('input[name="request_date"]');
+    
+    quickActionBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const days = parseInt(this.dataset.days);
+            const date = new Date();
+            date.setDate(date.getDate() + days);
+            dateField.value = date.toISOString().split('T')[0];
+        });
+    });
+    
+    // 文字数カウンター
+    const reasonField = document.querySelector('textarea[name="reason"]');
+    const reasonCounter = document.getElementById('reasonCounter');
+    
+    if (reasonField && reasonCounter) {
+        reasonField.addEventListener('input', function() {
+            const length = this.value.length;
+            const maxLength = 1000;
+            reasonCounter.textContent = `${length} / ${maxLength}文字`;
+            
+            if (length > maxLength * 0.9) {
+                reasonCounter.classList.add('warning');
+            } else {
+                reasonCounter.classList.remove('warning');
+            }
+            
+            if (length > maxLength) {
+                reasonCounter.classList.add('danger');
+            } else {
+                reasonCounter.classList.remove('danger');
+            }
+        });
+    }
+    
+    // プレビュー機能
+    document.getElementById('previewBtn').addEventListener('click', function() {
+        const formData = new FormData(document.getElementById('requestForm'));
+        const previewArea = document.getElementById('formPreview');
+        const previewContent = document.getElementById('previewContent');
+        
+        const requestType = formData.get('request_type');
+        const title = formData.get('title') || '（未入力）';
+        const requestDate = formData.get('request_date') || '（未入力）';
+        const priority = formData.get('priority') || 'medium';
+        const reason = formData.get('reason') || '（未入力）';
+        
+        const typeNames = {
+            'shift_change': 'シフト変更',
+            'time_off': '休暇申請',
+            'overtime': '残業申請',
+            'schedule_request': 'スケジュール希望'
+        };
+        
+        const priorityNames = {
+            'low': '低',
+            'medium': '中',
+            'high': '高'
+        };
+        
+        previewContent.innerHTML = `
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label small text-muted">申請タイプ</label>
+                    <div class="fw-semibold">${typeNames[requestType] || '（未選択）'}</div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small text-muted">優先度</label>
+                    <div class="fw-semibold">${priorityNames[priority]}</div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small text-muted">申請タイトル</label>
+                    <div class="fw-semibold">${title}</div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small text-muted">対象日</label>
+                    <div class="fw-semibold">${requestDate}</div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label small text-muted">申請理由</label>
+                    <div class="p-3 bg-white rounded">${reason.replace(/\n/g, '<br>')}</div>
+                </div>
+            </div>
+        `;
+        
+        previewArea.classList.remove('d-none');
+        previewArea.scrollIntoView({ behavior: 'smooth' });
+    });
+    
+    // フォームバリデーション
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
+        const requestType = document.querySelector('select[name="request_type"]').value;
+        const requestDate = document.querySelector('input[name="request_date"]').value;
+        const reason = document.querySelector('textarea[name="reason"]').value;
+        
+        if (!requestType) {
+            e.preventDefault();
+            alert('申請タイプを選択してください。');
+            return;
+        }
+        
+        if (!requestDate) {
+            e.preventDefault();
+            alert('対象日を入力してください。');
+            return;
+        }
+        
+        if (!reason.trim()) {
+            e.preventDefault();
+            alert('申請理由を入力してください。');
+            return;
+        }
+        
+        // 送信前の確認
+        if (!confirm('この内容で申請を提出しますか？')) {
+            e.preventDefault();
+        }
+    });
+    
+    // 初期値設定
+    const today = new Date().toISOString().split('T')[0];
+    if (dateField && !dateField.value) {
+        dateField.value = today;
+    }
+    
+    // 初期の優先度設定
+    if (priorityField) {
+        priorityField.value = 'medium';
+    }
+});
+</script>
+{% endblock %}

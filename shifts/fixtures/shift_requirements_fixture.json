@@ -1,0 +1,68 @@
+[
+  {
+    "model": "shifts.shiftrequirement",
+    "pk": 1,
+    "fields": {
+      "day_of_week": "月",
+      "nurse_required": 2,
+      "engineer_required": 1,
+      "assistant_required": 1,
+      "total_required": 7
+    }
+  },
+  {
+    "model": "shifts.shiftrequirement",
+    "pk": 2,
+    "fields": {
+      "day_of_week": "火",
+      "nurse_required": 1,
+      "engineer_required": 1,
+      "assistant_required": 1,
+      "total_required": 7
+    }
+  },
+  {
+    "model": "shifts.shiftrequirement",
+    "pk": 3,
+    "fields": {
+      "day_of_week": "水",
+      "nurse_required": 2,
+      "engineer_required": 2,
+      "assistant_required": 1,
+      "total_required": 7
+    }
+  },
+  {
+    "model": "shifts.shiftrequirement",
+    "pk": 4,
+    "fields": {
+      "day_of_week": "木",
+      "nurse_required": 1,
+      "engineer_required": 1,
+      "assistant_required": 1,
+      "total_required": 7
+    }
+  },
+  {
+    "model": "shifts.shiftrequirement",
+    "pk": 5,
+    "fields": {
+      "day_of_week": "金",
+      "nurse_required": 2,
+      "engineer_required": 1,
+      "assistant_required": 1,
+      "total_required": 7
+    }
+  },
+  {
+    "model": "shifts.shiftrequirement",
+    "pk": 6,
+    "fields": {
+      "day_of_week": "土",
+      "nurse_required": 1,
+      "engineer_required": 1,
+      "assistant_required": 0,
+      "total_required": 3
+    }
+  }
+]

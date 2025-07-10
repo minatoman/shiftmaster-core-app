@@ -1,0 +1,728 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}通知 - ShiftMaster{% endblock %}
+
+{% block extra_css %}
+<style>
+.notification-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.notification-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+    border-left: 4px solid #dee2e6;
+    position: relative;
+}
+
+.notification-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.notification-item.unread {
+    border-left-color: #007bff;
+    background: linear-gradient(90deg, #f8f9ff 0%, white 5%);
+}
+
+.notification-item.unread::before {
+    content: '';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 8px;
+    height: 8px;
+    background: #007bff;
+    border-radius: 50%;
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.notification-icon.shift-assigned {
+    background: #d4edda;
+    color: #155724;
+}
+
+.notification-icon.shift-changed {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.notification-icon.request-approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.notification-icon.request-rejected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.notification-icon.reminder {
+    background: #cce5ff;
+    color: #0066cc;
+}
+
+.notification-icon.announcement {
+    background: #e6ccff;
+    color: #6600cc;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #212529;
+}
+
+.notification-message {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.notification-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.filter-tabs {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.filter-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+.filter-tab.active {
+    background: #007bff;
+    color: white;
+}
+
+.filter-tab:hover:not(.active) {
+    background: #e9ecef;
+}
+
+.bulk-actions {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.bulk-actions .form-check {
+    margin-right: 1rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.notification-summary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.summary-stat {
+    text-align: center;
+    padding: 1rem;
+}
+
+.summary-stat .stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+}
+
+.summary-stat .stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .notification-item {
+        padding: 1rem;
+    }
+    
+    .notification-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .notification-actions {
+        justify-content: flex-start;
+    }
+    
+    .bulk-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-tabs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="notification-container">
+        <!-- ヘッダー -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">
+                    <i class="bi bi-bell"></i> 通知
+                </h2>
+                <p class="text-muted mb-0">最新の通知やお知らせをチェックできます</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary" id="markAllReadBtn">
+                    <i class="bi bi-check-all"></i> すべて既読
+                </button>
+                <button class="btn btn-outline-danger" id="clearAllBtn">
+                    <i class="bi bi-trash"></i> すべて削除
+                </button>
+            </div>
+        </div>
+
+        <!-- 通知サマリー -->
+        {% if notifications %}
+        <div class="notification-summary">
+            <div class="row text-center">
+                <div class="col-4">
+                    <div class="summary-stat">
+                        <span class="stat-number" id="totalCount">{{ notifications|length }}</span>
+                        <span class="stat-label">総通知数</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="summary-stat">
+                        <span class="stat-number" id="unreadCount">
+                            {{ notifications|length|add:"-10" }}
+                        </span>
+                        <span class="stat-label">未読通知</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="summary-stat">
+                        <span class="stat-number" id="todayCount">3</span>
+                        <span class="stat-label">今日の通知</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- フィルタータブ -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+                <i class="bi bi-list"></i> すべて
+            </button>
+            <button class="filter-tab" data-filter="unread">
+                <i class="bi bi-envelope"></i> 未読
+            </button>
+            <button class="filter-tab" data-filter="shift">
+                <i class="bi bi-calendar"></i> シフト関連
+            </button>
+            <button class="filter-tab" data-filter="request">
+                <i class="bi bi-file-text"></i> 申請関連
+            </button>
+            <button class="filter-tab" data-filter="announcement">
+                <i class="bi bi-megaphone"></i> お知らせ
+            </button>
+        </div>
+
+        <!-- 一括操作 -->
+        {% if notifications %}
+        <div class="bulk-actions">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="selectAll">
+                <label class="form-check-label" for="selectAll">
+                    すべて選択
+                </label>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" id="markSelectedReadBtn" disabled>
+                <i class="bi bi-check"></i> 選択項目を既読
+            </button>
+            <button class="btn btn-sm btn-outline-danger" id="deleteSelectedBtn" disabled>
+                <i class="bi bi-trash"></i> 選択項目を削除
+            </button>
+            <span class="ms-auto small text-muted" id="selectedCount">0件選択中</span>
+        </div>
+        {% endif %}
+
+        <!-- 通知リスト -->
+        <div id="notificationList">
+            {% for notification in notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}" 
+                 data-id="{{ notification.id }}"
+                 data-type="{{ notification.notification_type }}"
+                 data-read="{{ notification.is_read|yesno:'true,false' }}">
+                
+                <div class="d-flex align-items-start">
+                    <!-- 選択チェックボックス -->
+                    <div class="form-check me-3">
+                        <input class="form-check-input notification-checkbox" type="checkbox" 
+                               value="{{ notification.id }}" id="notification{{ notification.id }}">
+                    </div>
+                    
+                    <!-- 通知アイコン -->
+                    <div class="notification-icon {{ notification.notification_type|default:'info' }}">
+                        {% if notification.notification_type == 'shift_assigned' %}
+                            <i class="bi bi-calendar-plus"></i>
+                        {% elif notification.notification_type == 'shift_changed' %}
+                            <i class="bi bi-calendar-event"></i>
+                        {% elif notification.notification_type == 'request_approved' %}
+                            <i class="bi bi-check-circle"></i>
+                        {% elif notification.notification_type == 'request_rejected' %}
+                            <i class="bi bi-x-circle"></i>
+                        {% elif notification.notification_type == 'reminder' %}
+                            <i class="bi bi-alarm"></i>
+                        {% elif notification.notification_type == 'announcement' %}
+                            <i class="bi bi-megaphone"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle"></i>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- 通知内容 -->
+                    <div class="notification-content">
+                        <div class="notification-title">{{ notification.title }}</div>
+                        <div class="notification-message">{{ notification.message|linebreaks }}</div>
+                        
+                        <div class="notification-meta">
+                            <span>
+                                <i class="bi bi-clock"></i>
+                                {{ notification.created_at|timesince }}前
+                            </span>
+                            {% if notification.related_shift %}
+                            <span>
+                                <i class="bi bi-calendar"></i>
+                                {{ notification.related_shift.shift_date|date:"n/j" }}のシフト
+                            </span>
+                            {% endif %}
+                            {% if notification.related_request %}
+                            <span>
+                                <i class="bi bi-file-text"></i>
+                                申請ID: {{ notification.related_request.id }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- アクションボタン -->
+                        <div class="notification-actions">
+                            {% if not notification.is_read %}
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    onclick="markAsRead({{ notification.id }})">
+                                <i class="bi bi-check"></i> 既読にする
+                            </button>
+                            {% endif %}
+                            
+                            {% if notification.related_shift %}
+                            <a href="{% url 'shifts:calendar' %}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-calendar"></i> シフト確認
+                            </a>
+                            {% endif %}
+                            
+                            {% if notification.related_request %}
+                            <a href="{% url 'shifts:request_list' %}" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-file-text"></i> 申請確認
+                            </a>
+                            {% endif %}
+                            
+                            <button class="btn btn-sm btn-outline-danger" 
+                                    onclick="deleteNotification({{ notification.id }})">
+                                <i class="bi bi-trash"></i> 削除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-bell-slash"></i>
+                <h5>通知がありません</h5>
+                <p>新しい通知があるとここに表示されます。<br>現在は表示する通知がありません。</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ページネーション（必要に応じて） -->
+        {% if notifications.has_other_pages %}
+        <nav aria-label="通知ページナビゲーション" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if notifications.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ notifications.previous_page_number }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in notifications.paginator.page_range %}
+                    {% if num == notifications.number %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if notifications.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ notifications.next_page_number }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // フィルタータブの処理
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const notificationItems = document.querySelectorAll('.notification-item');
+    
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // アクティブタブの切り替え
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            // 通知のフィルタリング
+            notificationItems.forEach(item => {
+                let show = true;
+                
+                switch(filter) {
+                    case 'unread':
+                        show = item.dataset.read === 'false';
+                        break;
+                    case 'shift':
+                        show = ['shift_assigned', 'shift_changed'].includes(item.dataset.type);
+                        break;
+                    case 'request':
+                        show = ['request_approved', 'request_rejected'].includes(item.dataset.type);
+                        break;
+                    case 'announcement':
+                        show = item.dataset.type === 'announcement';
+                        break;
+                    default:
+                        show = true;
+                }
+                
+                item.style.display = show ? 'block' : 'none';
+            });
+            
+            updateCounts();
+        });
+    });
+    
+    // 全選択/全解除
+    const selectAllCheckbox = document.getElementById('selectAll');
+    const notificationCheckboxes = document.querySelectorAll('.notification-checkbox');
+    const markSelectedReadBtn = document.getElementById('markSelectedReadBtn');
+    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            const visibleCheckboxes = Array.from(notificationCheckboxes).filter(cb => 
+                cb.closest('.notification-item').style.display !== 'none'
+            );
+            
+            visibleCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            
+            updateSelectedCount();
+        });
+    }
+    
+    notificationCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+    
+    function updateSelectedCount() {
+        const selectedCheckboxes = Array.from(notificationCheckboxes).filter(cb => cb.checked);
+        const count = selectedCheckboxes.length;
+        
+        if (selectedCount) {
+            selectedCount.textContent = `${count}件選択中`;
+        }
+        
+        if (markSelectedReadBtn) {
+            markSelectedReadBtn.disabled = count === 0;
+        }
+        
+        if (deleteSelectedBtn) {
+            deleteSelectedBtn.disabled = count === 0;
+        }
+    }
+    
+    // 一括操作
+    if (markSelectedReadBtn) {
+        markSelectedReadBtn.addEventListener('click', function() {
+            const selectedIds = Array.from(notificationCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            
+            if (selectedIds.length > 0) {
+                markMultipleAsRead(selectedIds);
+            }
+        });
+    }
+    
+    if (deleteSelectedBtn) {
+        deleteSelectedBtn.addEventListener('click', function() {
+            const selectedIds = Array.from(notificationCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            
+            if (selectedIds.length > 0 && confirm(`選択した${selectedIds.length}件の通知を削除しますか？`)) {
+                deleteMultipleNotifications(selectedIds);
+            }
+        });
+    }
+    
+    // 全既読
+    document.getElementById('markAllReadBtn').addEventListener('click', function() {
+        if (confirm('すべての通知を既読にしますか？')) {
+            markAllAsRead();
+        }
+    });
+    
+    // 全削除
+    document.getElementById('clearAllBtn').addEventListener('click', function() {
+        if (confirm('すべての通知を削除しますか？この操作は元に戻せません。')) {
+            clearAllNotifications();
+        }
+    });
+    
+    function updateCounts() {
+        const visibleItems = Array.from(notificationItems).filter(item => 
+            item.style.display !== 'none'
+        );
+        const unreadItems = visibleItems.filter(item => 
+            item.dataset.read === 'false'
+        );
+        
+        // カウント更新のロジック
+        console.log(`表示中: ${visibleItems.length}件, 未読: ${unreadItems.length}件`);
+    }
+    
+    // 初期化
+    updateSelectedCount();
+    updateCounts();
+});
+
+// 個別既読
+function markAsRead(notificationId) {
+    fetch(`/shifts/notifications/${notificationId}/mark_read/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const item = document.querySelector(`[data-id="${notificationId}"]`);
+            item.classList.remove('unread');
+            item.dataset.read = 'true';
+            
+            // 既読ボタンを非表示
+            const readBtn = item.querySelector('button[onclick*="markAsRead"]');
+            if (readBtn) {
+                readBtn.remove();
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました。');
+    });
+}
+
+// 複数既読
+function markMultipleAsRead(notificationIds) {
+    fetch('/shifts/notifications/bulk_mark_read/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notification_ids: notificationIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました。');
+    });
+}
+
+// 全既読
+function markAllAsRead() {
+    fetch('/shifts/notifications/mark_all_read/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました。');
+    });
+}
+
+// 個別削除
+function deleteNotification(notificationId) {
+    if (confirm('この通知を削除しますか？')) {
+        fetch(`/shifts/notifications/${notificationId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector(`[data-id="${notificationId}"]`).remove();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('エラーが発生しました。');
+        });
+    }
+}
+
+// 複数削除
+function deleteMultipleNotifications(notificationIds) {
+    fetch('/shifts/notifications/bulk_delete/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notification_ids: notificationIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました。');
+    });
+}
+
+// 全削除
+function clearAllNotifications() {
+    fetch('/shifts/notifications/clear_all/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('エラーが発生しました。');
+    });
+}
+</script>
+{% endblock %}

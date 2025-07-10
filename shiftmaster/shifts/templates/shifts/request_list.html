@@ -1,0 +1,561 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}申請一覧 - ShiftMaster{% endblock %}
+
+{% block extra_css %}
+<style>
+.request-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.request-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
+    border-left: 4px solid #dee2e6;
+}
+
+.request-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.request-card.pending {
+    border-left-color: #ffc107;
+}
+
+.request-card.approved {
+    border-left-color: #28a745;
+}
+
+.request-card.rejected {
+    border-left-color: #dc3545;
+}
+
+.request-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.request-type-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #e9ecef;
+    color: #495057;
+}
+
+.request-type-shift_change {
+    background: #cce5ff;
+    color: #0066cc;
+}
+
+.request-type-time_off {
+    background: #ffe6cc;
+    color: #cc6600;
+}
+
+.request-type-overtime {
+    background: #e6ccff;
+    color: #6600cc;
+}
+
+.request-type-schedule_request {
+    background: #ccffe6;
+    color: #00cc66;
+}
+
+.filter-tabs {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    gap: 0.25rem;
+}
+
+.filter-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+.filter-tab.active {
+    background: #007bff;
+    color: white;
+}
+
+.filter-tab:hover:not(.active) {
+    background: #e9ecef;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.request-meta {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.request-priority {
+    padding: 0.125rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.priority-high {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.priority-medium {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.priority-low {
+    background: #d4edda;
+    color: #155724;
+}
+
+@media (max-width: 768px) {
+    .request-card {
+        padding: 1rem;
+    }
+    
+    .filter-tabs {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .filter-tab {
+        text-align: center;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="request-container">
+        <!-- ヘッダー -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-1">
+                    <i class="bi bi-file-earmark-text"></i> 申請一覧
+                </h2>
+                <p class="text-muted mb-0">あなたが提出した申請の状況を確認できます</p>
+            </div>
+            <a href="{% url 'shifts:request_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 新規申請
+            </a>
+        </div>
+
+        <!-- フィルタータブ -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all">
+                <i class="bi bi-list"></i> すべて
+            </button>
+            <button class="filter-tab" data-filter="pending">
+                <i class="bi bi-clock"></i> 保留中
+            </button>
+            <button class="filter-tab" data-filter="approved">
+                <i class="bi bi-check-circle"></i> 承認済み
+            </button>
+            <button class="filter-tab" data-filter="rejected">
+                <i class="bi bi-x-circle"></i> 拒否
+            </button>
+        </div>
+
+        <!-- 申請リスト -->
+        <div id="requestList">
+            {% for request in requests %}
+            <div class="request-card {{ request.status }}" data-status="{{ request.status }}">
+                <div class="row align-items-center">
+                    <!-- 申請情報 -->
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="request-type-badge request-type-{{ request.request_type }} me-2">
+                                {% if request.request_type == 'shift_change' %}
+                                    <i class="bi bi-arrow-left-right"></i> シフト変更
+                                {% elif request.request_type == 'time_off' %}
+                                    <i class="bi bi-calendar-x"></i> 休暇申請
+                                {% elif request.request_type == 'overtime' %}
+                                    <i class="bi bi-clock-history"></i> 残業申請
+                                {% elif request.request_type == 'schedule_request' %}
+                                    <i class="bi bi-calendar-plus"></i> スケジュール希望
+                                {% else %}
+                                    <i class="bi bi-file-text"></i> その他
+                                {% endif %}
+                            </span>
+                            
+                            <span class="request-status status-{{ request.status }}">
+                                {% if request.status == 'pending' %}
+                                    <i class="bi bi-clock"></i> 保留中
+                                {% elif request.status == 'approved' %}
+                                    <i class="bi bi-check-circle"></i> 承認済み
+                                {% else %}
+                                    <i class="bi bi-x-circle"></i> 拒否
+                                {% endif %}
+                            </span>
+                            
+                            {% if request.priority %}
+                            <span class="request-priority priority-{{ request.priority }} ms-2">
+                                {% if request.priority == 'high' %}
+                                    <i class="bi bi-exclamation-triangle"></i> 高
+                                {% elif request.priority == 'medium' %}
+                                    <i class="bi bi-info-circle"></i> 中
+                                {% else %}
+                                    <i class="bi bi-check-circle"></i> 低
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        <h6 class="mb-1">{{ request.title|default:"申請タイトル" }}</h6>
+                        
+                        {% if request.request_date %}
+                        <div class="request-meta mb-2">
+                            <i class="bi bi-calendar-date"></i>
+                            <strong>対象日:</strong> {{ request.request_date|date:"Y年n月j日(D)" }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if request.reason %}
+                        <p class="mb-2 text-muted">{{ request.reason|truncatewords:15 }}</p>
+                        {% endif %}
+                        
+                        <div class="request-meta">
+                            <i class="bi bi-clock"></i>
+                            申請日時: {{ request.created_at|date:"Y/m/d H:i" }}
+                            {% if request.approved_at %}
+                                | 承認日時: {{ request.approved_at|date:"Y/m/d H:i" }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- ステータスとアクション -->
+                    <div class="col-md-4 text-md-end">
+                        {% if request.status == 'pending' %}
+                        <div class="action-buttons">
+                            <button class="btn btn-outline-primary btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#requestModal{{ request.id }}">
+                                <i class="bi bi-eye"></i> 詳細
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" 
+                                    onclick="editRequest({{ request.id }})">
+                                <i class="bi bi-pencil"></i> 編集
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" 
+                                    onclick="cancelRequest({{ request.id }})">
+                                <i class="bi bi-x"></i> 取消
+                            </button>
+                        </div>
+                        {% else %}
+                        <button class="btn btn-outline-primary btn-sm" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#requestModal{{ request.id }}">
+                            <i class="bi bi-eye"></i> 詳細
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <i class="bi bi-file-earmark-text"></i>
+                <h5>申請がありません</h5>
+                <p>まだ申請を提出していません。<br>新しい申請を作成してみましょう。</p>
+                <a href="{% url 'shifts:request_create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> 申請を作成
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- 申請詳細モーダル -->
+{% for request in requests %}
+<div class="modal fade" id="requestModal{{ request.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-file-earmark-text"></i> 申請詳細
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="request-type-badge request-type-{{ request.request_type }} me-3">
+                                {% if request.request_type == 'shift_change' %}
+                                    <i class="bi bi-arrow-left-right"></i> シフト変更
+                                {% elif request.request_type == 'time_off' %}
+                                    <i class="bi bi-calendar-x"></i> 休暇申請
+                                {% elif request.request_type == 'overtime' %}
+                                    <i class="bi bi-clock-history"></i> 残業申請
+                                {% elif request.request_type == 'schedule_request' %}
+                                    <i class="bi bi-calendar-plus"></i> スケジュール希望
+                                {% else %}
+                                    <i class="bi bi-file-text"></i> その他
+                                {% endif %}
+                            </span>
+                            
+                            <span class="request-status status-{{ request.status }}">
+                                {% if request.status == 'pending' %}
+                                    <i class="bi bi-clock"></i> 保留中
+                                {% elif request.status == 'approved' %}
+                                    <i class="bi bi-check-circle"></i> 承認済み
+                                {% else %}
+                                    <i class="bi bi-x-circle"></i> 拒否
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label small text-muted">申請者</label>
+                        <div class="fw-semibold">{{ request.requester.name }}</div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label small text-muted">申請日時</label>
+                        <div class="fw-semibold">{{ request.created_at|date:"Y年n月j日 H:i" }}</div>
+                    </div>
+                    
+                    {% if request.request_date %}
+                    <div class="col-6">
+                        <label class="form-label small text-muted">対象日</label>
+                        <div class="fw-semibold">{{ request.request_date|date:"Y年n月j日(D)" }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.priority %}
+                    <div class="col-6">
+                        <label class="form-label small text-muted">優先度</label>
+                        <div>
+                            <span class="request-priority priority-{{ request.priority }}">
+                                {% if request.priority == 'high' %}
+                                    <i class="bi bi-exclamation-triangle"></i> 高
+                                {% elif request.priority == 'medium' %}
+                                    <i class="bi bi-info-circle"></i> 中
+                                {% else %}
+                                    <i class="bi bi-check-circle"></i> 低
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.title %}
+                    <div class="col-12">
+                        <label class="form-label small text-muted">申請タイトル</label>
+                        <div class="fw-semibold">{{ request.title }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.reason %}
+                    <div class="col-12">
+                        <label class="form-label small text-muted">申請理由</label>
+                        <div class="p-3 bg-light rounded">{{ request.reason|linebreaks }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.approved_by %}
+                    <div class="col-6">
+                        <label class="form-label small text-muted">承認者</label>
+                        <div class="fw-semibold">{{ request.approved_by.name }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.approved_at %}
+                    <div class="col-6">
+                        <label class="form-label small text-muted">承認日時</label>
+                        <div class="fw-semibold">{{ request.approved_at|date:"Y年n月j日 H:i" }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if request.admin_notes %}
+                    <div class="col-12">
+                        <label class="form-label small text-muted">管理者コメント</label>
+                        <div class="p-3 bg-light rounded">{{ request.admin_notes|linebreaks }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    閉じる
+                </button>
+                {% if request.status == 'pending' %}
+                <button type="button" class="btn btn-warning" onclick="editRequest({{ request.id }})">
+                    <i class="bi bi-pencil"></i> 編集
+                </button>
+                <button type="button" class="btn btn-danger" onclick="cancelRequest({{ request.id }})">
+                    <i class="bi bi-x"></i> 取消
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // フィルタータブの処理
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    const requestCards = document.querySelectorAll('.request-card');
+    
+    filterTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // アクティブタブの切り替え
+            filterTabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            
+            // カードのフィルタリング
+            requestCards.forEach(card => {
+                if (filter === 'all' || card.dataset.status === filter) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // 空の状態チェック
+            checkEmptyState(filter);
+        });
+    });
+    
+    function checkEmptyState(filter) {
+        const visibleCards = Array.from(requestCards).filter(card => 
+            card.style.display !== 'none'
+        );
+        
+        const emptyState = document.querySelector('.empty-state');
+        if (visibleCards.length === 0 && emptyState) {
+            emptyState.style.display = 'block';
+        } else if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+    }
+});
+
+// 申請編集
+function editRequest(requestId) {
+    // TODO: 編集ページへのリダイレクトまたはモーダル表示
+    window.location.href = `/shifts/requests/${requestId}/edit/`;
+}
+
+// 申請取消
+function cancelRequest(requestId) {
+    if (confirm('この申請を取り消しますか？この操作は元に戻せません。')) {
+        // TODO: AJAX で取消処理
+        fetch(`/shifts/requests/${requestId}/cancel/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('エラーが発生しました: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('通信エラーが発生しました。');
+        });
+    }
+}
+
+// ページ読み込み時のカウント表示
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.filter-tab');
+    const cards = document.querySelectorAll('.request-card');
+    
+    tabs.forEach(tab => {
+        const filter = tab.dataset.filter;
+        let count = 0;
+        
+        if (filter === 'all') {
+            count = cards.length;
+        } else {
+            count = Array.from(cards).filter(card => 
+                card.dataset.status === filter
+            ).length;
+        }
+        
+        if (count > 0) {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-secondary ms-1';
+            badge.textContent = count;
+            tab.appendChild(badge);
+        }
+    });
+});
+</script>
+{% endblock %}

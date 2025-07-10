@@ -1,0 +1,167 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+
+{% block title %}ShiftMaster - スマートなシフト管理{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="display-4 fw-bold text-primary mb-4">
+                <i class="bi bi-calendar-check"></i> ShiftMaster
+            </h1>
+            <p class="lead mb-4">スマートで効率的なシフト管理システム</p>
+            <p class="mb-4">医療機関、介護施設、サービス業に最適化されたモバイル対応シフト管理アプリです。</p>
+            
+            {% if not user.is_authenticated %}
+            <div class="d-grid gap-2 d-md-block">
+                <a href="{% url 'shifts:register' %}" class="btn btn-primary btn-lg px-4 me-md-2">
+                    <i class="bi bi-person-plus"></i> 今すぐ始める
+                </a>
+                <a href="{% url 'shifts:login' %}" class="btn btn-outline-primary btn-lg px-4">
+                    <i class="bi bi-box-arrow-in-right"></i> ログイン
+                </a>
+            </div>
+            {% else %}
+            <div class="d-grid gap-2 d-md-block">
+                <a href="{% url 'shifts:dashboard' %}" class="btn btn-primary btn-lg px-4">
+                    <i class="bi bi-house"></i> ダッシュボードへ
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="features-section py-5">
+    <div class="row">
+        <div class="col-lg-12">
+            <h2 class="text-center mb-5">主な機能</h2>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Feature 1 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon text-primary mb-3">
+                        <i class="bi bi-calendar3 display-4"></i>
+                    </div>
+                    <h5 class="card-title">シフト管理</h5>
+                    <p class="card-text">直感的なカレンダーでシフトの作成・編集・確認が簡単にできます。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon text-success mb-3">
+                        <i class="bi bi-clock-history display-4"></i>
+                    </div>
+                    <h5 class="card-title">出勤打刻</h5>
+                    <p class="card-text">スマホでいつでもどこでも出勤・退勤・休憩の打刻ができます。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon text-warning mb-3">
+                        <i class="bi bi-arrow-left-right display-4"></i>
+                    </div>
+                    <h5 class="card-title">シフト交換</h5>
+                    <p class="card-text">従業員同士でシフト交換や変更申請を簡単に行えます。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feature 4 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="feature-icon text-info mb-3">
+                        <i class="bi bi-bell display-4"></i>
+                    </div>
+                    <h5 class="card-title">通知機能</h5>
+                    <p class="card-text">シフトの変更や申請の承認状況をリアルタイムで通知します。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile-First Design -->
+<div class="mobile-section bg-light py-5 my-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h3 class="mb-4">スマホ完全対応</h3>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-phone text-primary me-3 fs-4"></i>
+                        <span>レスポンシブデザイン</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-lightning text-primary me-3 fs-4"></i>
+                        <span>高速動作</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-shield-check text-primary me-3 fs-4"></i>
+                        <span>セキュア</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-wifi text-primary me-3 fs-4"></i>
+                        <span>オフライン対応</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="phone-mockup">
+                <div class="card border-primary" style="max-width: 300px; margin: 0 auto;">
+                    <div class="card-header bg-primary text-white text-center">
+                        <small><i class="bi bi-calendar-check"></i> ShiftMaster</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <div class="badge bg-success">今日のシフト</div>
+                        </div>
+                        <h6 class="text-center">9:00 - 17:00</h6>
+                        <p class="text-center text-muted small">看護師・日勤</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary btn-sm">チェックイン</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not user.is_authenticated %}
+<!-- CTA Section -->
+<div class="cta-section text-center py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h3 class="mb-4">今すぐShiftMasterを始めよう</h3>
+            <p class="mb-4">無料でアカウントを作成して、効率的なシフト管理を体験してください。</p>
+            <a href="{% url 'shifts:register' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-person-plus"></i> 無料で始める
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

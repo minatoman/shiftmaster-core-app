@@ -1,0 +1,415 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}{{ title }} - ShiftMaster{% endblock %}
+
+{% block extra_css %}
+<style>
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.form-section {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-section h6 {
+    color: #495057;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.time-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.employee-select {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.employee-option {
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.employee-option:hover {
+    background-color: #e9ecef;
+}
+
+.employee-option input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+.shift-type-preview {
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin: 0.5rem 0;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.shift-type-preview:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.shift-type-preview.selected {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.quick-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.quick-action-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    background: white;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.quick-action-btn:hover,
+.quick-action-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+@media (max-width: 768px) {
+    .form-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .time-input-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="form-container">
+        <!-- ヘッダー -->
+        <div class="text-center mb-4">
+            <h2 class="mb-2">
+                <i class="bi bi-calendar-plus"></i> {{ title }}
+            </h2>
+            <p class="text-muted">シフトの詳細情報を入力してください</p>
+        </div>
+
+        <div class="form-card">
+            <form method="post" id="shiftForm">
+                {% csrf_token %}
+                
+                <!-- エラー表示 -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- 基本情報 -->
+                <div class="form-section">
+                    <h6><i class="bi bi-info-circle"></i> 基本情報</h6>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">従業員 <span class="text-danger">*</span></label>
+                            {{ form.employee|add_class:"form-select" }}
+                            {% if form.employee.errors %}
+                                <div class="text-danger small">{{ form.employee.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">シフト日 <span class="text-danger">*</span></label>
+                            {{ form.shift_date|add_class:"form-control" }}
+                            {% if form.shift_date.errors %}
+                                <div class="text-danger small">{{ form.shift_date.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- シフトタイプ選択 -->
+                <div class="form-section">
+                    <h6><i class="bi bi-clock"></i> シフトタイプ</h6>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">シフトタイプ <span class="text-danger">*</span></label>
+                        <div class="row g-2" id="shiftTypeSelection">
+                            <!-- JavaScriptで動的に生成 -->
+                        </div>
+                        {{ form.shift_type|add_class:"form-select d-none" }}
+                        {% if form.shift_type.errors %}
+                            <div class="text-danger small">{{ form.shift_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- クイックアクション -->
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">クイックアクション</label>
+                        <div class="quick-actions">
+                            <button type="button" class="quick-action-btn" data-time="09:00-17:00">
+                                日勤 (9:00-17:00)
+                            </button>
+                            <button type="button" class="quick-action-btn" data-time="13:00-22:00">
+                                遅番 (13:00-22:00)
+                            </button>
+                            <button type="button" class="quick-action-btn" data-time="22:00-06:00">
+                                夜勤 (22:00-6:00)
+                            </button>
+                            <button type="button" class="quick-action-btn" data-time="00:00-00:00">
+                                終日
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 詳細設定 -->
+                <div class="form-section">
+                    <h6><i class="bi bi-gear"></i> 詳細設定</h6>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">ステータス</label>
+                            {{ form.status|add_class:"form-select" }}
+                            {% if form.status.errors %}
+                                <div class="text-danger small">{{ form.status.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mt-4">
+                                {{ form.is_approved|add_class:"form-check-input" }}
+                                <label class="form-check-label" for="{{ form.is_approved.id_for_label }}">
+                                    承認済み
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <label class="form-label">備考</label>
+                        {{ form.notes|add_class:"form-control" }}
+                        <div class="form-text">必要に応じて追加情報を入力してください</div>
+                        {% if form.notes.errors %}
+                            <div class="text-danger small">{{ form.notes.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- 操作ボタン -->
+                <div class="d-flex justify-content-between flex-wrap gap-2">
+                    <a href="{% url 'shifts:shift_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> 戻る
+                    </a>
+                    
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary" id="previewBtn">
+                            <i class="bi bi-eye"></i> プレビュー
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> 保存
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- プレビューモーダル -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-eye"></i> シフトプレビュー
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="previewContent">
+                <!-- JavaScriptで動的に生成 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    閉じる
+                </button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('shiftForm').submit();">
+                    <i class="bi bi-check-lg"></i> この内容で保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // シフトタイプの選択肢を動的に生成
+    const shiftTypeSelect = document.querySelector('select[name="shift_type"]');
+    const shiftTypeContainer = document.getElementById('shiftTypeSelection');
+    
+    if (shiftTypeSelect && shiftTypeContainer) {
+        Array.from(shiftTypeSelect.options).forEach((option, index) => {
+            if (option.value) {
+                const col = document.createElement('div');
+                col.className = 'col-md-6 col-lg-4';
+                
+                const preview = document.createElement('div');
+                preview.className = 'shift-type-preview';
+                preview.style.backgroundColor = option.dataset.color || '#f8f9fa';
+                preview.style.color = option.dataset.textColor || '#333';
+                preview.dataset.value = option.value;
+                preview.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-semibold">${option.text}</div>
+                            <small class="opacity-75">${option.dataset.time || '時間未設定'}</small>
+                        </div>
+                        <i class="bi bi-check-circle d-none"></i>
+                    </div>
+                `;
+                
+                preview.addEventListener('click', function() {
+                    // 他の選択を解除
+                    document.querySelectorAll('.shift-type-preview').forEach(p => {
+                        p.classList.remove('selected');
+                        p.querySelector('.bi-check-circle').classList.add('d-none');
+                    });
+                    
+                    // 現在の選択
+                    this.classList.add('selected');
+                    this.querySelector('.bi-check-circle').classList.remove('d-none');
+                    shiftTypeSelect.value = this.dataset.value;
+                });
+                
+                col.appendChild(preview);
+                shiftTypeContainer.appendChild(col);
+            }
+        });
+        
+        // 初期選択を反映
+        if (shiftTypeSelect.value) {
+            const selectedPreview = shiftTypeContainer.querySelector(`[data-value="${shiftTypeSelect.value}"]`);
+            if (selectedPreview) {
+                selectedPreview.click();
+            }
+        }
+    }
+    
+    // クイックアクションボタン
+    document.querySelectorAll('.quick-action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.quick-action-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // ここで時間設定のロジックを追加可能
+            const timeRange = this.dataset.time;
+            console.log('Selected time range:', timeRange);
+        });
+    });
+    
+    // プレビュー機能
+    document.getElementById('previewBtn').addEventListener('click', function() {
+        const formData = new FormData(document.getElementById('shiftForm'));
+        const employee = document.querySelector('select[name="employee"] option:checked').text;
+        const shiftDate = formData.get('shift_date');
+        const shiftType = document.querySelector('select[name="shift_type"] option:checked').text;
+        const status = document.querySelector('select[name="status"] option:checked').text;
+        const notes = formData.get('notes');
+        const isApproved = formData.get('is_approved') ? '承認済み' : '未承認';
+        
+        const previewContent = document.getElementById('previewContent');
+        previewContent.innerHTML = `
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label small text-muted">従業員</label>
+                    <div class="fw-semibold">${employee}</div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small text-muted">シフト日</label>
+                    <div class="fw-semibold">${shiftDate}</div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small text-muted">シフトタイプ</label>
+                    <div class="fw-semibold">${shiftType}</div>
+                </div>
+                <div class="col-6">
+                    <label class="form-label small text-muted">ステータス</label>
+                    <div class="fw-semibold">${status}</div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label small text-muted">承認状態</label>
+                    <div class="fw-semibold">${isApproved}</div>
+                </div>
+                ${notes ? `
+                <div class="col-12">
+                    <label class="form-label small text-muted">備考</label>
+                    <div class="p-3 bg-light rounded">${notes}</div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+        
+        new bootstrap.Modal(document.getElementById('previewModal')).show();
+    });
+    
+    // 日付の初期値設定（今日）
+    const dateInput = document.querySelector('input[name="shift_date"]');
+    if (dateInput && !dateInput.value) {
+        const today = new Date();
+        dateInput.value = today.toISOString().split('T')[0];
+    }
+    
+    // フォームバリデーション
+    document.getElementById('shiftForm').addEventListener('submit', function(e) {
+        const employee = document.querySelector('select[name="employee"]').value;
+        const shiftDate = document.querySelector('input[name="shift_date"]').value;
+        const shiftType = document.querySelector('select[name="shift_type"]').value;
+        
+        if (!employee || !shiftDate || !shiftType) {
+            e.preventDefault();
+            alert('必須項目を入力してください。');
+            return;
+        }
+        
+        // 送信前の確認
+        if (!confirm('この内容でシフトを保存しますか？')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

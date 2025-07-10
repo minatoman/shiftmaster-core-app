@@ -1,0 +1,35 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">勤務希望データのインポート</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="csv_file">CSVファイルを選択</label>
+            <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+        </div>
+        
+        <div class="mb-3 mt-3">
+            <button type="submit" class="btn btn-primary">インポート</button>
+        </div>
+    </form>
+
+    {% if error %}
+    <div class="alert alert-danger mt-3">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="alert alert-success mt-3">
+        {{ success }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+

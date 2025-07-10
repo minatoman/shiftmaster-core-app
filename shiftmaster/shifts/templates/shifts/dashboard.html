@@ -1,0 +1,283 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+
+{% block title %}ダッシュボード - ShiftMaster{% endblock %}
+
+{% block content %}
+<div class="dashboard-header mb-4">
+    <div class="row align-items-center">
+        <div class="col">
+            <h1 class="h3 mb-0">おかえりなさい、{{ employee.name }}さん</h1>
+            <p class="text-muted">{{ today|date:"Y年n月j日 (l)" }}</p>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group" role="group">
+                <a href="{% url 'shifts:attendance_punch' %}" class="btn btn-primary">
+                    <i class="bi bi-clock"></i> 打刻
+                </a>
+                <a href="{% url 'shifts:request_create' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-plus"></i> 申請
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Shift Card -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card today-shift-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar-day"></i> 今日のシフト</h5>
+                {% if today_shift %}
+                <span class="badge bg-{{ today_shift.shift_type.color_code|default:'primary' }}">
+                    {{ today_shift.shift_type.name }}
+                </span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if today_shift %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="shift-info">
+                            <h6 class="text-muted">勤務時間</h6>
+                            <p class="fs-5 mb-2">
+                                {{ today_shift.shift_type.start_time|time:"H:i" }} - 
+                                {{ today_shift.shift_type.end_time|time:"H:i" }}
+                            </p>
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i> 
+                                {{ today_shift.shift_type.work_hours|floatformat:1 }}時間勤務
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="attendance-status">
+                            <h6 class="text-muted">出勤状況</h6>
+                            {% if attendance_today %}
+                                {% if attendance_today.check_out_time %}
+                                <p class="text-success"><i class="bi bi-check-circle"></i> 退勤済み</p>
+                                {% elif attendance_today.break_start_time and not attendance_today.break_end_time %}
+                                <p class="text-warning"><i class="bi bi-pause-circle"></i> 休憩中</p>
+                                {% elif attendance_today.check_in_time %}
+                                <p class="text-info"><i class="bi bi-play-circle"></i> 勤務中</p>
+                                {% else %}
+                                <p class="text-secondary"><i class="bi bi-circle"></i> 未出勤</p>
+                                {% endif %}
+                            {% else %}
+                            <p class="text-secondary"><i class="bi bi-circle"></i> 未出勤</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if today_shift.notes %}
+                <div class="mt-3">
+                    <h6 class="text-muted">備考</h6>
+                    <p class="mb-0">{{ today_shift.notes }}</p>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-calendar-x display-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">今日はお休みです</h5>
+                    <p class="text-muted">ゆっくりお過ごしください。</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> クイックアクション</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    {% if today_shift %}
+                    <a href="{% url 'shifts:attendance_punch' %}" class="btn btn-primary">
+                        <i class="bi bi-clock"></i> 出勤打刻
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'shifts:calendar' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar"></i> カレンダー
+                    </a>
+                    <a href="{% url 'shifts:request_create' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left-right"></i> シフト申請
+                    </a>
+                    <a href="{% url 'shifts:profile_edit' %}" class="btn btn-outline-info">
+                        <i class="bi bi-person-gear"></i> プロフィール
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- This Week's Schedule -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-calendar-week"></i> 今週のスケジュール</h5>
+                <a href="{% url 'shifts:calendar' %}" class="btn btn-sm btn-outline-primary">
+                    詳細を見る
+                </a>
+            </div>
+            <div class="card-body">
+                {% if week_shifts %}
+                <div class="week-schedule">
+                    <div class="row g-2">
+                        {% for shift in week_shifts %}
+                        <div class="col-md col-6">
+                            <div class="mini-shift-card text-center p-2 border rounded 
+                                        {% if shift.shift_date == today %}bg-primary text-white{% endif %}">
+                                <div class="day-name">
+                                    {{ shift.shift_date|date:"D" }}
+                                </div>
+                                <div class="day-number">
+                                    {{ shift.shift_date|date:"j" }}
+                                </div>
+                                <div class="shift-time small">
+                                    {{ shift.shift_type.start_time|time:"H:i" }}-{{ shift.shift_type.end_time|time:"H:i" }}
+                                </div>
+                                <div class="shift-type small text-truncate">
+                                    {{ shift.shift_type.name }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                    <i class="bi bi-calendar-x text-muted"></i>
+                    <p class="text-muted mb-0">今週はシフトがありません</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notifications and Requests -->
+<div class="row">
+    <!-- Notifications -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-bell"></i> 通知</h5>
+                <a href="{% url 'shifts:notifications' %}" class="btn btn-sm btn-outline-primary">
+                    すべて見る
+                </a>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                <div class="notification-list">
+                    {% for notification in notifications %}
+                    <div class="notification-item d-flex align-items-start mb-3 {% if not notification.is_read %}fw-bold{% endif %}">
+                        <div class="notification-icon me-3">
+                            {% if notification.notification_type == 'shift_assigned' %}
+                            <i class="bi bi-calendar-plus text-success"></i>
+                            {% elif notification.notification_type == 'shift_changed' %}
+                            <i class="bi bi-calendar-event text-warning"></i>
+                            {% elif notification.notification_type == 'request_approved' %}
+                            <i class="bi bi-check-circle text-success"></i>
+                            {% elif notification.notification_type == 'request_rejected' %}
+                            <i class="bi bi-x-circle text-danger"></i>
+                            {% else %}
+                            <i class="bi bi-info-circle text-info"></i>
+                            {% endif %}
+                        </div>
+                        <div class="notification-content flex-grow-1">
+                            <h6 class="mb-1">{{ notification.title }}</h6>
+                            <p class="mb-1 small text-muted">{{ notification.message|truncatewords:10 }}</p>
+                            <small class="text-muted">{{ notification.created_at|timesince }}前</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                    <i class="bi bi-bell-slash text-muted"></i>
+                    <p class="text-muted mb-0">新しい通知はありません</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pending Requests -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-hourglass-split"></i> 申請状況</h5>
+                <a href="{% url 'shifts:request_list' %}" class="btn btn-sm btn-outline-primary">
+                    すべて見る
+                </a>
+            </div>
+            <div class="card-body">
+                {% if pending_requests > 0 %}
+                <div class="text-center py-3">
+                    <div class="display-4 text-warning">{{ pending_requests }}</div>
+                    <p class="text-muted">件の申請が承認待ちです</p>
+                    <a href="{% url 'shifts:request_list' %}" class="btn btn-outline-primary btn-sm">
+                        詳細を確認
+                    </a>
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                    <i class="bi bi-check-circle text-success display-4"></i>
+                    <p class="text-muted mb-0">承認待ちの申請はありません</p>
+                    <a href="{% url 'shifts:request_create' %}" class="btn btn-outline-primary btn-sm mt-2">
+                        新しい申請を作成
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.today-shift-card {
+    border-left: 4px solid #007bff;
+}
+
+.mini-shift-card {
+    min-height: 80px;
+    transition: all 0.2s ease;
+}
+
+.mini-shift-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.notification-item {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 1rem;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .mini-shift-card {
+        min-height: 60px;
+        font-size: 0.85rem;
+    }
+    
+    .dashboard-header .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

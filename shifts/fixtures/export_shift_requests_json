@@ -1,0 +1,6 @@
+from django.http import JsonResponse
+from .models import ShiftRequest
+
+def export_shift_requests_json(request):
+    shift_requests = ShiftRequest.objects.all().values('employee_id', 'requested_date', 'shift_type', 'priority', 'approved')
+    return JsonResponse(list(shift_requests), safe=False)

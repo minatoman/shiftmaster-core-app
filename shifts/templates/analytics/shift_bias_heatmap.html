@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}勤務偏りヒートマップ{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>勤務偏りヒートマップ</h2>
+    <p>月別の勤務偏りをヒートマップ形式で表示します。</p>
+
+    <!-- ヒートマップを表示するためのキャンバス -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <canvas id="shiftHeatmap" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // サンプルデータ（実際にはバックエンドから取得したデータを使用）
+    const heatmapData = {
+        labels: ['月', '火', '水', '木', '金', '土', '日'],
+        datasets: [{
+            label: '勤務偏り',
+            data: [10, 5, 6, 7, 8, 12, 11],  // サンプルの勤務回数データ
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    new Chart(document.getElementById('shiftHeatmap'), {
+        type: 'bar',
+        data: heatmapData,
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: '勤務偏りヒートマップ' }
+            }
+        });
+</script>
+{% endblock %}
+
+

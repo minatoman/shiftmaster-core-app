@@ -1,0 +1,32 @@
+<div class="container">
+    <h1 class="my-4 text-center">シフト統計</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">総シフト数</h5>
+                    <p class="card-text">{{ total_shifts }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">承認済みシフト数</h5>
+                    <p class="card-text">{{ approved_shifts }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">未承認シフト数</h5>
+                    <p class="card-text">{{ unapproved_shifts }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

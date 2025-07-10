@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>委員会スケジュール</title>
+</head>
+<body>
+    <h1>委員会スケジュール</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>委員会名</th>
+                <th>開催頻度</th>
+                <th>曜日</th>
+                <th>月内の日</th>
+                <th>時間</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for committee in committees %}
+            <tr>
+                <td>{{ committee.name }}</td>
+                <td>{{ committee.schedule_type }}</td>
+                <td>{{ committee.weekday }}</td>
+                <td>{{ committee.day_of_month }}</td>
+                <td>{{ committee.time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
+
+

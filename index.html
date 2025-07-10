@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShiftMaster - シフト管理システム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .header h1 {
+            color: #2c3e50;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .header .subtitle {
+            color: #7f8c8d;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+        .status-badge {
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .feature-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .admin-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .admin-section h2 {
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-align: center;
+        }
+        .admin-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .admin-link {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        .admin-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #3498db;
+            display: block;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 ShiftMaster</h1>
+            <p class="subtitle">医療機関向け統合シフト管理システム</p>
+            <div class="status-badge">✨ システム稼働中 ✨</div>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat-item">
+                <span class="stat-number">42</span>
+                <div class="stat-label">登録スタッフ</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">156</span>
+                <div class="stat-label">今月のシフト</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">23</span>
+                <div class="stat-label">休暇申請</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">8</span>
+                <div class="stat-label">未承認申請</div>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="icon">📅</span>
+                <h3>シフト管理</h3>
+                <p>スタッフのシフトスケジュールを効率的に作成・管理。自動割当機能で最適なシフト配置を実現します。</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="icon">👥</span>
+                <h3>スタッフ管理</h3>
+                <p>従業員情報の一元管理。資格、経験、勤務制約などの詳細情報を管理し、適切な配置をサポートします。</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="icon">📊</span>
+                <h3>勤務希望管理</h3>
+                <p>スタッフからの勤務希望・休暇申請を効率的に処理。承認フローとアラート機能で見落としを防止します。</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="icon">💉</span>
+                <h3>透析日誌管理</h3>
+                <p>透析患者の情報管理と日誌記録。患者ごとの詳細情報とスタッフ配置を一括管理できます。</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="icon">📈</span>
+                <h3>統計・レポート</h3>
+                <p>勤務統計、コスト分析、パフォーマンス指標などの包括的なレポート機能。データドリブンな意思決定をサポート。</p>
+            </div>
+            
+            <div class="feature-card">
+                <span class="icon">📤</span>
+                <h3>データ管理</h3>
+                <p>CSV/Excelファイルの簡単インポート・エクスポート。既存システムとの連携も簡単に実現できます。</p>
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <h2>🛠️ 管理者機能</h2>
+            <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                システム管理者向けの高度な機能とバックエンド管理ツール
+            </p>
+            <div class="admin-links">
+                <a href="admin.html" class="admin-link">📋 管理ダッシュボード</a>
+                <a href="#" class="admin-link" onclick="alert('Django管理画面は現在準備中です')">⚙️ Django Admin</a>
+                <a href="#" class="admin-link" onclick="alert('システム設定は現在準備中です')">🔧 システム設定</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>🌟 ShiftMaster の特徴</h3>
+            <p>医療現場の複雑なシフト管理を簡単に。直感的なインターフェースと強力な自動化機能で、業務効率を大幅に向上させます。</p>
+            <p style="margin-top: 20px;">
+                <strong>© 2025 ShiftMaster</strong> - 医療機関向けシフト管理システム<br>
+                Version 2.0 | Django 5.2 | PostgreSQL対応
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 簡単なインタラクション
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const feature = this.querySelector('h3').textContent;
+                alert(`${feature}機能の詳細ページを準備中です。\n\n現在、以下の機能が利用可能です：\n- データの表示・編集\n- CSV/Excelインポート・エクスポート\n- 統計レポート生成\n- 自動シフト割当`);
+            });
+        });
+
+        // アニメーション効果
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

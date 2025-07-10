@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "employee_id": 1,
+    "holiday_date": "2025-04-30",
+    "holiday_type": "paid",
+    "request_date": "2025-04-15T10:00:00"
+  },
+  {
+    "id": 2,
+    "employee_id": 2,
+    "holiday_date": "2025-05-03",
+    "holiday_type": "summer",
+    "request_date": "2025-04-16T11:00:00"
+  }
+]

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>シフト日誌</title>
+    <style>
+        body {
+            font-family: "Meiryo", "Helvetica", sans-serif;
+            font-size: 12pt;
+            padding: 20px;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            border-bottom: 2px solid #444;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #666;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 10pt;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+<h2>{{ today|date:"Y年m月" }} シフト日誌</h2>
+
+<table>
+    <tr>
+        <th>日付</th>
+        <th>氏名</th>
+        <th>勤務区分</th>
+    </tr>
+    {% for s in shifts %}
+        <tr>
+            <td>{{ s.shift_date }}</td>
+            <td>{{ s.employee.name }}</td>
+            <td>{{ s.shift_type }}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+<div class="footer">
+    印刷日：{{ today|date:"Y年m月d日" }}
+</div>
+
+</body>
+</html>
+
+
+

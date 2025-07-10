@@ -1,0 +1,416 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}シフト一覧 - ShiftMaster{% endblock %}
+
+{% block extra_css %}
+<style>
+.shift-filter {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.shift-table {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.shift-item {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease;
+}
+
+.shift-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.shift-type-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.employee-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.status-approved { background-color: #28a745; }
+.status-pending { background-color: #ffc107; }
+.status-rejected { background-color: #dc3545; }
+
+@media (max-width: 768px) {
+    .shift-table-desktop {
+        display: none;
+    }
+    
+    .shift-item-mobile {
+        display: block;
+    }
+}
+
+@media (min-width: 769px) {
+    .shift-table-desktop {
+        display: table;
+    }
+    
+    .shift-item-mobile {
+        display: none;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <!-- ヘッダー -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="bi bi-calendar-week"></i> シフト一覧</h2>
+            <p class="text-muted mb-0">全てのシフトを確認・管理できます</p>
+        </div>
+        <div class="btn-group">
+            <a href="{% url 'shifts:shift_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 新規作成
+            </a>
+            <a href="{% url 'shifts:quick_shift_create' %}" class="btn btn-outline-primary">
+                <i class="bi bi-lightning"></i> クイック作成
+            </a>
+        </div>
+    </div>
+
+    <!-- フィルター -->
+    <div class="shift-filter">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                {{ form.start_date|add_class:"form-control" }}
+                <label class="form-label small text-muted">開始日</label>
+            </div>
+            <div class="col-md-4">
+                {{ form.end_date|add_class:"form-control" }}
+                <label class="form-label small text-muted">終了日</label>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-search"></i> フィルター
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- デスクトップ版テーブル -->
+    <div class="shift-table shift-table-desktop">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>従業員</th>
+                    <th>日付</th>
+                    <th>シフトタイプ</th>
+                    <th>時間</th>
+                    <th>ステータス</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shift in shifts %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if shift.employee.profile_image %}
+                                <img src="{{ shift.employee.profile_image.url }}" 
+                                     alt="{{ shift.employee.name }}" 
+                                     class="employee-avatar me-2">
+                            {% else %}
+                                <div class="employee-avatar me-2">
+                                    {{ shift.employee.name|slice:":1" }}
+                                </div>
+                            {% endif %}
+                            <div>
+                                <div class="fw-semibold">{{ shift.employee.name }}</div>
+                                <small class="text-muted">{{ shift.employee.position }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold">{{ shift.shift_date|date:"n/j" }}</div>
+                        <small class="text-muted">{{ shift.shift_date|date:"D" }}</small>
+                    </td>
+                    <td>
+                        <span class="shift-type-badge text-white" 
+                              style="background-color: {{ shift.shift_type.color_code }};">
+                            {{ shift.shift_type.name }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if shift.shift_type.start_time and shift.shift_type.end_time %}
+                            <div>{{ shift.shift_type.start_time|time:"H:i" }} - {{ shift.shift_type.end_time|time:"H:i" }}</div>
+                        {% else %}
+                            <span class="text-muted">時間未設定</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="status-indicator status-{{ shift.status }}"></span>
+                        {% if shift.status == 'approved' %}
+                            <span class="text-success">承認済み</span>
+                        {% elif shift.status == 'pending' %}
+                            <span class="text-warning">保留中</span>
+                        {% else %}
+                            <span class="text-danger">拒否</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-primary btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#shiftModal{{ shift.id }}">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            {% if user.employee.is_manager %}
+                            <a href="#" class="btn btn-outline-warning btn-sm">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">
+                        <div class="text-muted">
+                            <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                            <p>該当するシフトがありません</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- モバイル版カード -->
+    <div class="shift-item-mobile">
+        {% for shift in shifts %}
+        <div class="shift-item">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center">
+                    {% if shift.employee.profile_image %}
+                        <img src="{{ shift.employee.profile_image.url }}" 
+                             alt="{{ shift.employee.name }}" 
+                             class="employee-avatar me-3">
+                    {% else %}
+                        <div class="employee-avatar me-3">
+                            {{ shift.employee.name|slice:":1" }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h6 class="mb-0">{{ shift.employee.name }}</h6>
+                        <small class="text-muted">{{ shift.employee.position }}</small>
+                    </div>
+                </div>
+                <span class="shift-type-badge text-white" 
+                      style="background-color: {{ shift.shift_type.color_code }};">
+                    {{ shift.shift_type.name }}
+                </span>
+            </div>
+            
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <div class="text-center p-2 bg-light rounded">
+                        <i class="bi bi-calendar-date text-primary"></i>
+                        <div class="fw-semibold">{{ shift.shift_date|date:"n/j" }}</div>
+                        <small class="text-muted">{{ shift.shift_date|date:"D" }}</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="text-center p-2 bg-light rounded">
+                        <i class="bi bi-clock text-primary"></i>
+                        {% if shift.shift_type.start_time and shift.shift_type.end_time %}
+                            <div class="fw-semibold">{{ shift.shift_type.start_time|time:"H:i" }}</div>
+                            <small class="text-muted">{{ shift.shift_type.end_time|time:"H:i" }}まで</small>
+                        {% else %}
+                            <div class="text-muted">時間未設定</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="status-indicator status-{{ shift.status }}"></span>
+                    {% if shift.status == 'approved' %}
+                        <span class="text-success small">承認済み</span>
+                    {% elif shift.status == 'pending' %}
+                        <span class="text-warning small">保留中</span>
+                    {% else %}
+                        <span class="text-danger small">拒否</span>
+                    {% endif %}
+                </div>
+                <button class="btn btn-outline-primary btn-sm" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#shiftModal{{ shift.id }}">
+                    <i class="bi bi-eye"></i> 詳細
+                </button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-5">
+            <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
+            <h5 class="text-muted">該当するシフトがありません</h5>
+            <p class="text-muted">フィルター条件を変更するか、新しいシフトを作成してください。</p>
+            <a href="{% url 'shifts:shift_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> シフトを作成
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- シフト詳細モーダル -->
+{% for shift in shifts %}
+<div class="modal fade" id="shiftModal{{ shift.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-calendar-event"></i> シフト詳細
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if shift.employee.profile_image %}
+                                <img src="{{ shift.employee.profile_image.url }}" 
+                                     alt="{{ shift.employee.name }}" 
+                                     class="employee-avatar me-3">
+                            {% else %}
+                                <div class="employee-avatar me-3">
+                                    {{ shift.employee.name|slice:":1" }}
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h6 class="mb-0">{{ shift.employee.name }}</h6>
+                                <small class="text-muted">{{ shift.employee.position }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label small text-muted">シフト日</label>
+                        <div class="fw-semibold">{{ shift.shift_date|date:"Y年n月j日(D)" }}</div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label small text-muted">シフトタイプ</label>
+                        <div>
+                            <span class="shift-type-badge text-white" 
+                                  style="background-color: {{ shift.shift_type.color_code }};">
+                                {{ shift.shift_type.name }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {% if shift.shift_type.start_time and shift.shift_type.end_time %}
+                    <div class="col-6">
+                        <label class="form-label small text-muted">開始時間</label>
+                        <div class="fw-semibold">{{ shift.shift_type.start_time|time:"H:i" }}</div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <label class="form-label small text-muted">終了時間</label>
+                        <div class="fw-semibold">{{ shift.shift_type.end_time|time:"H:i" }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-6">
+                        <label class="form-label small text-muted">ステータス</label>
+                        <div>
+                            <span class="status-indicator status-{{ shift.status }}"></span>
+                            {% if shift.status == 'approved' %}
+                                <span class="text-success">承認済み</span>
+                            {% elif shift.status == 'pending' %}
+                                <span class="text-warning">保留中</span>
+                            {% else %}
+                                <span class="text-danger">拒否</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if shift.notes %}
+                    <div class="col-12">
+                        <label class="form-label small text-muted">備考</label>
+                        <div class="p-3 bg-light rounded">{{ shift.notes }}</div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-12">
+                        <small class="text-muted">
+                            作成日時: {{ shift.created_at|date:"Y/m/d H:i" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    閉じる
+                </button>
+                {% if user.employee.is_manager %}
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> 編集
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 日付フィルターの初期化
+    const today = new Date();
+    const startDate = document.querySelector('input[name="start_date"]');
+    const endDate = document.querySelector('input[name="end_date"]');
+    
+    if (startDate && !startDate.value) {
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        startDate.value = firstDay.toISOString().split('T')[0];
+    }
+    
+    if (endDate && !endDate.value) {
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        endDate.value = lastDay.toISOString().split('T')[0];
+    }
+});
+</script>
+{% endblock %}

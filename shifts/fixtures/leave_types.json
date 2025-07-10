@@ -1,0 +1,26 @@
+[
+  {
+    "type": "有給",
+    "condition": "1年以内"
+  },
+  {
+    "type": "代休",
+    "condition": "年以内"
+  },
+  {
+    "type": "週休",
+    "condition": "3年以内"
+  },
+  {
+    "type": "夏季休暇",
+    "condition": "6月～10月までの間の3日間"
+  },
+  {
+    "type": "特別休暇",
+    "condition": "その都度"
+  },
+  {
+    "type": "義務免除",
+    "condition": "その都度"
+  }
+]

@@ -1,0 +1,230 @@
+<div class="notification-item-component" data-notification-id="{{ notification.id }}">
+    <div class="d-flex align-items-start p-3 rounded-3 {% if not notification.is_read %}bg-light{% endif %} notification-hover">
+        <!-- 通知アイコン -->
+        <div class="notification-icon-wrapper me-3">
+            <div class="notification-icon rounded-circle d-flex align-items-center justify-content-center"
+                 style="width: 40px; height: 40px;">
+                {% if notification.notification_type == 'shift_assigned' %}
+                    <i class="bi bi-calendar-plus text-success"></i>
+                {% elif notification.notification_type == 'shift_changed' %}
+                    <i class="bi bi-calendar-event text-warning"></i>
+                {% elif notification.notification_type == 'request_approved' %}
+                    <i class="bi bi-check-circle text-success"></i>
+                {% elif notification.notification_type == 'request_rejected' %}
+                    <i class="bi bi-x-circle text-danger"></i>
+                {% elif notification.notification_type == 'reminder' %}
+                    <i class="bi bi-alarm text-info"></i>
+                {% elif notification.notification_type == 'announcement' %}
+                    <i class="bi bi-megaphone text-primary"></i>
+                {% else %}
+                    <i class="bi bi-info-circle text-secondary"></i>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- 通知内容 -->
+        <div class="notification-content flex-grow-1">
+            <div class="d-flex justify-content-between align-items-start mb-1">
+                <h6 class="notification-title mb-0 {% if not notification.is_read %}fw-bold{% endif %}">
+                    {{ notification.title }}
+                </h6>
+                {% if not notification.is_read %}
+                    <span class="badge bg-primary rounded-pill">新着</span>
+                {% endif %}
+            </div>
+            
+            <p class="notification-message text-muted mb-2 small">
+                {{ notification.message|truncatewords:15 }}
+            </p>
+            
+            <div class="notification-meta d-flex align-items-center gap-3">
+                <small class="text-muted">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ notification.created_at|timesince }}前
+                </small>
+                
+                {% if notification.related_shift %}
+                <small class="text-muted">
+                    <i class="bi bi-calendar me-1"></i>
+                    {{ notification.related_shift.shift_date|date:"n/j" }}
+                </small>
+                {% endif %}
+                
+                {% if notification.related_request %}
+                <small class="text-muted">
+                    <i class="bi bi-file-text me-1"></i>
+                    申請#{{ notification.related_request.id }}
+                </small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- アクションボタン -->
+        <div class="notification-actions ms-3">
+            <div class="btn-group-vertical btn-group-sm">
+                {% if not notification.is_read %}
+                <button type="button" class="btn btn-outline-primary btn-sm" 
+                        onclick="markNotificationAsRead({{ notification.id }})"
+                        title="既読にする">
+                    <i class="bi bi-check"></i>
+                </button>
+                {% endif %}
+                
+                {% if notification.related_shift %}
+                <a href="{% url 'shifts:calendar' %}" class="btn btn-outline-success btn-sm" 
+                   title="シフトを確認">
+                    <i class="bi bi-calendar"></i>
+                </a>
+                {% endif %}
+                
+                {% if notification.related_request %}
+                <a href="{% url 'shifts:request_list' %}" class="btn btn-outline-info btn-sm"
+                   title="申請を確認">
+                    <i class="bi bi-file-text"></i>
+                </a>
+                {% endif %}
+                
+                <button type="button" class="btn btn-outline-danger btn-sm" 
+                        onclick="deleteNotification({{ notification.id }})"
+                        title="削除">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.notification-item-component {
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.notification-item-component:last-child {
+    border-bottom: none;
+}
+
+.notification-hover:hover {
+    background-color: #f8f9fa !important;
+    cursor: pointer;
+}
+
+.notification-icon {
+    background-color: #f8f9fa;
+    font-size: 1.2rem;
+}
+
+.notification-title {
+    color: #212529;
+    line-height: 1.4;
+}
+
+.notification-message {
+    line-height: 1.4;
+    margin-bottom: 0.5rem;
+}
+
+.notification-meta {
+    font-size: 0.8rem;
+}
+
+.notification-actions .btn-group-vertical {
+    box-shadow: none;
+}
+
+.notification-actions .btn {
+    border: 1px solid #dee2e6;
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 2px;
+}
+
+.notification-actions .btn:hover {
+    z-index: 1;
+}
+
+.notification-actions .btn:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .notification-actions {
+        margin-left: 0.5rem;
+    }
+    
+    .notification-actions .btn-group-vertical {
+        flex-direction: row;
+    }
+    
+    .notification-actions .btn {
+        margin-bottom: 0;
+        margin-right: 2px;
+        padding: 0.25rem;
+        font-size: 0.8rem;
+    }
+    
+    .notification-actions .btn:last-child {
+        margin-right: 0;
+    }
+    
+    .notification-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* 未読通知のスタイル */
+.notification-item-component .bg-light {
+    background: linear-gradient(90deg, #e3f2fd 0%, #f8f9fa 10%, white 100%) !important;
+    border-left: 3px solid #2196f3;
+    padding-left: 1rem;
+}
+
+/* 通知タイプ別のアイコン色調整 */
+.notification-icon .text-success {
+    color: #28a745 !important;
+}
+
+.notification-icon .text-warning {
+    color: #ffc107 !important;
+}
+
+.notification-icon .text-danger {
+    color: #dc3545 !important;
+}
+
+.notification-icon .text-info {
+    color: #17a2b8 !important;
+}
+
+.notification-icon .text-primary {
+    color: #007bff !important;
+}
+
+.notification-icon .text-secondary {
+    color: #6c757d !important;
+}
+</style>
+
+<script>
+// 通知アイテムクリックで詳細表示
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.notification-hover').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // ボタンクリック時は詳細表示しない
+            if (e.target.closest('.btn') || e.target.closest('a')) {
+                return;
+            }
+            
+            const notificationId = this.closest('.notification-item-component').dataset.notificationId;
+            showNotificationDetail(notificationId);
+        });
+    });
+});
+
+function showNotificationDetail(notificationId) {
+    // 通知詳細モーダルを表示する関数
+    // 必要に応じて実装
+    console.log(`通知詳細を表示: ${notificationId}`);
+}
+</script>

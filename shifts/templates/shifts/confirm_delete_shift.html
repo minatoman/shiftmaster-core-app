@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シフト削除確認</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <div class="container mt-5">
+
+        <div class="card shadow">
+            <div class="card-body">
+                <h1 class="card-title text-center mb-4">🗑️ シフト削除の確認</h1>
+
+                {% if shift %}
+                <p class="lead text-center">
+                    本当に <strong>{{ shift.employee.name }}（{{ shift.get_shift_type_display }}）</strong> の<br>
+                    <strong>{{ shift.shift_date }}</strong> のシフトを削除しますか？
+                </p>
+
+                <p class="text-center text-danger fw-bold">
+                    ⚠️ この操作は元に戻せません。削除するとこのシフトの情報は完全に失われます。
+                </p>
+
+                <form method="POST" class="text-center mt-4">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-lg me-3">
+                        <i class="bi bi-trash"></i> 削除する
+                    </button>
+                    <a href="{% url 'shifts:shift_list' %}" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left"></i> キャンセル
+                    </a>
+                </form>
+                {% else %}
+                <div class="alert alert-warning text-center">
+                    対象のシフトが見つかりません。
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons（オプション） -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</body>
+
+</html>
+
+
+

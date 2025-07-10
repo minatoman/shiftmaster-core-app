@@ -1,0 +1,24 @@
+import json
+from django.shortcuts import render
+from django.contrib import messages
+import pandas as pd
+from .models import ShiftRequest
+
+def import_shift_requests_json(request):
+    if request.method == 'POST' and request.FILES['shift_requests_json']:
+        file = request.FILES['shift_requests_json']
+        try:
+            data = json.load(file)
+            for entry in data:
+                ShiftRequest.objects.update_or_create(
+                    employee_id=entry['employee_id'],
+                    requested_date=entry['requested_date'],
+                    shift_type=entry['shift_type'],
+                    priority=entry['priority'],
+                    approved=entry['approved']
+                )
+            messages.success(request, '勤務希望のJSONインポートが完了しました。')
+        except Exception as e:
+            messages.error(request, f'エラーが発生しました: {e}')
+        return render(request, 'shifts/import_shift_requests_json.html')
+    return render(request, 'shifts/import_shift_requests_json.html')

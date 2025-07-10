@@ -1,0 +1,35 @@
+<!-- templates/shifts/my_schedule.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ employee.name }} の勤務表</title>
+</head>
+<body>
+    <h1>{{ employee.name }} の勤務表</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>日付</th>
+                <th>勤務タイプ</th>
+                <th>配置先</th>
+                <th>備考</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for shift in shifts %}
+            <tr>
+                <td>{{ shift.shift_date }}</td>
+                <td>{{ shift.shift_type }}</td>
+                <td>{{ shift.location }}</td>
+                <td>{{ shift.notes }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">勤務データがありません。</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

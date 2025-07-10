@@ -1,0 +1,690 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}クイックシフト作成 - ShiftMaster{% endblock %}
+
+{% block extra_css %}
+<style>
+.quick-form-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.quick-form-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    color: #6c757d;
+}
+
+.step.active {
+    color: #007bff;
+}
+
+.step.completed {
+    color: #28a745;
+}
+
+.step-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.step.active .step-number {
+    background: #007bff;
+    color: white;
+}
+
+.step.completed .step-number {
+    background: #28a745;
+    color: white;
+}
+
+.step-connector {
+    width: 50px;
+    height: 2px;
+    background: #e9ecef;
+    margin: 0 1rem;
+}
+
+.step.completed + .step .step-connector {
+    background: #28a745;
+}
+
+.employee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.employee-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.employee-card:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.employee-card.selected {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+.employee-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 0.5rem;
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.shift-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.shift-type-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.shift-type-card:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+}
+
+.shift-type-card.selected {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+.date-range-preview {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.date-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.date-item {
+    background: #007bff;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.875rem;
+}
+
+.summary-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-section {
+    margin-bottom: 1.5rem;
+}
+
+.summary-section:last-child {
+    margin-bottom: 0;
+}
+
+.bulk-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.bulk-action-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    background: white;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.bulk-action-btn:hover,
+.bulk-action-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+@media (max-width: 768px) {
+    .quick-form-card {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+    
+    .employee-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .shift-type-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-indicator {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .step-connector {
+        width: 2px;
+        height: 30px;
+        margin: 0;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <div class="quick-form-container">
+        <!-- ヘッダー -->
+        <div class="text-center mb-4">
+            <h2 class="mb-2">
+                <i class="bi bi-lightning-charge"></i> クイックシフト作成
+            </h2>
+            <p class="text-muted">複数の従業員に対して一括でシフトを作成できます</p>
+        </div>
+
+        <!-- ステップインジケーター -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">
+                <div class="step-number">1</div>
+                <span>従業員選択</span>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step" id="step2">
+                <div class="step-number">2</div>
+                <span>シフト設定</span>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step" id="step3">
+                <div class="step-number">3</div>
+                <span>確認</span>
+            </div>
+        </div>
+
+        <div class="quick-form-card">
+            <form method="post" id="quickShiftForm">
+                {% csrf_token %}
+                
+                <!-- エラー表示 -->
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- ステップ1: 従業員選択 -->
+                <div class="form-step" id="formStep1">
+                    <h5 class="mb-3">
+                        <i class="bi bi-people"></i> 従業員を選択してください
+                    </h5>
+                    
+                    <!-- 一括選択アクション -->
+                    <div class="bulk-actions">
+                        <button type="button" class="bulk-action-btn" id="selectAllBtn">
+                            <i class="bi bi-check-all"></i> 全選択
+                        </button>
+                        <button type="button" class="bulk-action-btn" id="selectNoneBtn">
+                            <i class="bi bi-x"></i> 全解除
+                        </button>
+                        <button type="button" class="bulk-action-btn" id="selectManagersBtn">
+                            <i class="bi bi-person-badge"></i> 管理者のみ
+                        </button>
+                        <button type="button" class="bulk-action-btn" id="selectStaffBtn">
+                            <i class="bi bi-person"></i> スタッフのみ
+                        </button>
+                    </div>
+                    
+                    <div class="employee-grid" id="employeeGrid">
+                        <!-- JavaScriptで動的に生成 -->
+                    </div>
+                    
+                    <!-- 隠しフィールド -->
+                    {{ form.employees|add_class:"d-none" }}
+                    {% if form.employees.errors %}
+                        <div class="text-danger small mt-2">{{ form.employees.errors.0 }}</div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" class="btn btn-primary" id="nextStep1">
+                            次へ <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ステップ2: シフト設定 -->
+                <div class="form-step d-none" id="formStep2">
+                    <h5 class="mb-3">
+                        <i class="bi bi-calendar-event"></i> シフト設定
+                    </h5>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">シフトタイプ <span class="text-danger">*</span></label>
+                            <div class="shift-type-grid" id="shiftTypeGrid">
+                                <!-- JavaScriptで動的に生成 -->
+                            </div>
+                            {{ form.shift_type|add_class:"d-none" }}
+                            {% if form.shift_type.errors %}
+                                <div class="text-danger small">{{ form.shift_type.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">開始日 <span class="text-danger">*</span></label>
+                                {{ form.start_date|add_class:"form-control" }}
+                                {% if form.start_date.errors %}
+                                    <div class="text-danger small">{{ form.start_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">終了日 <span class="text-danger">*</span></label>
+                                {{ form.end_date|add_class:"form-control" }}
+                                {% if form.end_date.errors %}
+                                    <div class="text-danger small">{{ form.end_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- 日付範囲プレビュー -->
+                            <div class="date-range-preview" id="dateRangePreview">
+                                <h6><i class="bi bi-calendar-range"></i> 対象日数</h6>
+                                <div id="dateCount">日付を選択してください</div>
+                                <div class="date-list" id="dateList"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary" id="prevStep2">
+                            <i class="bi bi-arrow-left"></i> 戻る
+                        </button>
+                        <button type="button" class="btn btn-primary" id="nextStep2">
+                            次へ <i class="bi bi-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ステップ3: 確認 -->
+                <div class="form-step d-none" id="formStep3">
+                    <h5 class="mb-3">
+                        <i class="bi bi-check-circle"></i> 内容確認
+                    </h5>
+                    
+                    <div class="summary-card">
+                        <div class="summary-section">
+                            <h6 class="text-primary">選択された従業員</h6>
+                            <div id="selectedEmployeesSummary"></div>
+                        </div>
+                        
+                        <div class="summary-section">
+                            <h6 class="text-primary">シフト設定</h6>
+                            <div id="shiftSettingsSummary"></div>
+                        </div>
+                        
+                        <div class="summary-section">
+                            <h6 class="text-primary">作成予定シフト数</h6>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle"></i>
+                                <span id="totalShiftsCount">0</span>件のシフトが作成されます
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" id="prevStep3">
+                            <i class="bi bi-arrow-left"></i> 戻る
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-lg"></i> シフトを作成
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 1;
+    let selectedEmployees = [];
+    let selectedShiftType = null;
+    
+    // 従業員データ（実際のデータに置き換え）
+    const employees = [
+        {% for employee in form.employees.field.queryset %}
+        {
+            id: {{ employee.id }},
+            name: '{{ employee.name }}',
+            position: '{{ employee.position }}',
+            image: '{{ employee.profile_image.url|default:"" }}'
+        },
+        {% endfor %}
+    ];
+    
+    // シフトタイプデータ
+    const shiftTypes = [
+        {% for shift_type in form.shift_type.field.queryset %}
+        {
+            id: {{ shift_type.id }},
+            name: '{{ shift_type.name }}',
+            color: '{{ shift_type.color_code }}',
+            startTime: '{{ shift_type.start_time|default:"" }}',
+            endTime: '{{ shift_type.end_time|default:"" }}'
+        },
+        {% endfor %}
+    ];
+    
+    // 従業員グリッドを初期化
+    function initializeEmployeeGrid() {
+        const grid = document.getElementById('employeeGrid');
+        grid.innerHTML = '';
+        
+        employees.forEach(employee => {
+            const card = document.createElement('div');
+            card.className = 'employee-card';
+            card.dataset.employeeId = employee.id;
+            card.innerHTML = `
+                ${employee.image ? 
+                    `<img src="${employee.image}" alt="${employee.name}" class="employee-avatar">` :
+                    `<div class="employee-avatar">${employee.name.charAt(0)}</div>`
+                }
+                <div class="fw-semibold">${employee.name}</div>
+                <small class="text-muted">${employee.position}</small>
+                <i class="bi bi-check-circle position-absolute top-0 end-0 m-2 text-success d-none"></i>
+            `;
+            
+            card.addEventListener('click', function() {
+                toggleEmployeeSelection(employee.id, this);
+            });
+            
+            grid.appendChild(card);
+        });
+    }
+    
+    // シフトタイプグリッドを初期化
+    function initializeShiftTypeGrid() {
+        const grid = document.getElementById('shiftTypeGrid');
+        grid.innerHTML = '';
+        
+        shiftTypes.forEach(shiftType => {
+            const card = document.createElement('div');
+            card.className = 'shift-type-card';
+            card.dataset.shiftTypeId = shiftType.id;
+            card.style.borderLeftColor = shiftType.color;
+            card.style.borderLeftWidth = '4px';
+            card.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="fw-semibold">${shiftType.name}</div>
+                        ${shiftType.startTime && shiftType.endTime ? 
+                            `<small class="text-muted">${shiftType.startTime} - ${shiftType.endTime}</small>` :
+                            '<small class="text-muted">時間未設定</small>'
+                        }
+                    </div>
+                    <i class="bi bi-check-circle text-success d-none"></i>
+                </div>
+            `;
+            
+            card.addEventListener('click', function() {
+                selectShiftType(shiftType.id, this);
+            });
+            
+            grid.appendChild(card);
+        });
+    }
+    
+    // 従業員選択の切り替え
+    function toggleEmployeeSelection(employeeId, cardElement) {
+        if (selectedEmployees.includes(employeeId)) {
+            selectedEmployees = selectedEmployees.filter(id => id !== employeeId);
+            cardElement.classList.remove('selected');
+            cardElement.querySelector('.bi-check-circle').classList.add('d-none');
+        } else {
+            selectedEmployees.push(employeeId);
+            cardElement.classList.add('selected');
+            cardElement.querySelector('.bi-check-circle').classList.remove('d-none');
+        }
+        
+        updateEmployeeField();
+    }
+    
+    // シフトタイプ選択
+    function selectShiftType(shiftTypeId, cardElement) {
+        // 他の選択を解除
+        document.querySelectorAll('.shift-type-card').forEach(card => {
+            card.classList.remove('selected');
+            card.querySelector('.bi-check-circle').classList.add('d-none');
+        });
+        
+        // 現在の選択
+        selectedShiftType = shiftTypeId;
+        cardElement.classList.add('selected');
+        cardElement.querySelector('.bi-check-circle').classList.remove('d-none');
+        
+        updateShiftTypeField();
+    }
+    
+    // 隠しフィールドの更新
+    function updateEmployeeField() {
+        const field = document.querySelector('select[name="employees"]');
+        Array.from(field.options).forEach(option => {
+            option.selected = selectedEmployees.includes(parseInt(option.value));
+        });
+    }
+    
+    function updateShiftTypeField() {
+        const field = document.querySelector('select[name="shift_type"]');
+        field.value = selectedShiftType;
+    }
+    
+    // 一括選択ボタン
+    document.getElementById('selectAllBtn').addEventListener('click', function() {
+        selectedEmployees = employees.map(emp => emp.id);
+        document.querySelectorAll('.employee-card').forEach(card => {
+            card.classList.add('selected');
+            card.querySelector('.bi-check-circle').classList.remove('d-none');
+        });
+        updateEmployeeField();
+    });
+    
+    document.getElementById('selectNoneBtn').addEventListener('click', function() {
+        selectedEmployees = [];
+        document.querySelectorAll('.employee-card').forEach(card => {
+            card.classList.remove('selected');
+            card.querySelector('.bi-check-circle').classList.add('d-none');
+        });
+        updateEmployeeField();
+    });
+    
+    // ステップナビゲーション
+    function showStep(step) {
+        // ステップインジケーター更新
+        document.querySelectorAll('.step').forEach((stepEl, index) => {
+            stepEl.classList.remove('active', 'completed');
+            if (index + 1 < step) {
+                stepEl.classList.add('completed');
+            } else if (index + 1 === step) {
+                stepEl.classList.add('active');
+            }
+        });
+        
+        // フォームステップ表示
+        document.querySelectorAll('.form-step').forEach((stepEl, index) => {
+            stepEl.classList.toggle('d-none', index + 1 !== step);
+        });
+        
+        currentStep = step;
+    }
+    
+    // ステップナビゲーションイベント
+    document.getElementById('nextStep1').addEventListener('click', function() {
+        if (selectedEmployees.length === 0) {
+            alert('従業員を選択してください。');
+            return;
+        }
+        showStep(2);
+    });
+    
+    document.getElementById('prevStep2').addEventListener('click', function() {
+        showStep(1);
+    });
+    
+    document.getElementById('nextStep2').addEventListener('click', function() {
+        if (!selectedShiftType) {
+            alert('シフトタイプを選択してください。');
+            return;
+        }
+        
+        const startDate = document.querySelector('input[name="start_date"]').value;
+        const endDate = document.querySelector('input[name="end_date"]').value;
+        
+        if (!startDate || !endDate) {
+            alert('開始日と終了日を入力してください。');
+            return;
+        }
+        
+        updateSummary();
+        showStep(3);
+    });
+    
+    document.getElementById('prevStep3').addEventListener('click', function() {
+        showStep(2);
+    });
+    
+    // 日付範囲プレビュー更新
+    function updateDateRangePreview() {
+        const startDate = document.querySelector('input[name="start_date"]').value;
+        const endDate = document.querySelector('input[name="end_date"]').value;
+        
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            document.getElementById('dateCount').textContent = `${diffDays}日間`;
+            
+            // 日付リスト生成
+            const dateList = document.getElementById('dateList');
+            dateList.innerHTML = '';
+            
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                const dateItem = document.createElement('div');
+                dateItem.className = 'date-item';
+                dateItem.textContent = `${d.getMonth() + 1}/${d.getDate()}`;
+                dateList.appendChild(dateItem);
+            }
+        }
+    }
+    
+    // サマリー更新
+    function updateSummary() {
+        // 選択された従業員
+        const selectedEmployeeNames = selectedEmployees.map(id => {
+            const emp = employees.find(e => e.id === id);
+            return emp ? emp.name : '';
+        }).filter(name => name);
+        
+        document.getElementById('selectedEmployeesSummary').innerHTML = 
+            selectedEmployeeNames.join(', ');
+        
+        // シフト設定
+        const shiftType = shiftTypes.find(st => st.id === selectedShiftType);
+        const startDate = document.querySelector('input[name="start_date"]').value;
+        const endDate = document.querySelector('input[name="end_date"]').value;
+        
+        document.getElementById('shiftSettingsSummary').innerHTML = `
+            <div><strong>シフトタイプ:</strong> ${shiftType ? shiftType.name : ''}</div>
+            <div><strong>期間:</strong> ${startDate} ～ ${endDate}</div>
+        `;
+        
+        // 総シフト数計算
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) + 1;
+            const totalShifts = selectedEmployees.length * diffDays;
+            
+            document.getElementById('totalShiftsCount').textContent = totalShifts;
+        }
+    }
+    
+    // 日付入力のイベントリスナー
+    document.querySelector('input[name="start_date"]').addEventListener('change', updateDateRangePreview);
+    document.querySelector('input[name="end_date"]').addEventListener('change', updateDateRangePreview);
+    
+    // 初期化
+    initializeEmployeeGrid();
+    initializeShiftTypeGrid();
+    
+    // 今日の日付を初期値に設定
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelector('input[name="start_date"]').value = today;
+    document.querySelector('input[name="end_date"]').value = today;
+    updateDateRangePreview();
+});
+</script>
+{% endblock %}

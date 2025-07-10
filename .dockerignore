@@ -1,0 +1,110 @@
+# Git
+.git
+.gitignore
+README.md
+.env
+.env.example
+.env.local
+.env.production
+.env.staging
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+build
+develop-eggs
+dist
+downloads
+eggs
+.eggs
+lib
+lib64
+parts
+sdist
+var
+wheels
+*.egg-info
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+new_env/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+logfile
+logfile.txt
+
+# Database
+*.sqlite3
+*.sqlite3-journal
+*.db
+db/
+
+# Static files
+staticfiles/
+static/admin/
+media/
+
+# Cache
+.mypy_cache
+.pytest_cache
+*.pyc
+__pycache__/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Documentation
+docs/_build/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup and temporary files
+*.bak
+backup*/
+*backup*
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Project-specific
+generated_prompt_*.txt
+ShiftMaster.txt
+*ssh*
+*conoha*
+*vps*
+upload_and_deploy.ps1
+pwfile.txt
+prompt_history/
+error_logs/

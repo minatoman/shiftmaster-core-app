@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">🧑‍⚕️ スタッフ情報登録フォーム</h2>
+
+  <form method="post" class="border p-4 shadow rounded bg-light">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label fw-bold">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}
+          <div class="form-text">{{ field.help_text }}</div>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-success">✅ 登録する</button>
+      <a href="{% url 'staff:employee_list' %}" class="btn btn-outline-secondary">戻る</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+
+
+

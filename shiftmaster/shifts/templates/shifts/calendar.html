@@ -1,0 +1,289 @@
+{% extends 'shifts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}シフトカレンダー - ShiftMaster{% endblock %}
+
+{% block content %}
+<div class="calendar-header mb-4">
+    <div class="row align-items-center">
+        <div class="col">
+            <h1 class="h3 mb-0">
+                <i class="bi bi-calendar3"></i> 
+                {% calendar_month_name month %}{{ year }}年
+            </h1>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group" role="group">
+                <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-primary">
+                    <i class="bi bi-chevron-left"></i>
+                    <span class="d-none d-md-inline">前月</span>
+                </a>
+                <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-primary">
+                    <span class="d-none d-md-inline">次月</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Calendar Grid -->
+<div class="calendar-container">
+    <div class="card">
+        <div class="card-body p-0">
+            <!-- Calendar Header -->
+            <div class="calendar-header-days d-none d-md-flex bg-light">
+                <div class="calendar-day-header text-center py-2 fw-bold text-danger">日</div>
+                <div class="calendar-day-header text-center py-2 fw-bold">月</div>
+                <div class="calendar-day-header text-center py-2 fw-bold">火</div>
+                <div class="calendar-day-header text-center py-2 fw-bold">水</div>
+                <div class="calendar-day-header text-center py-2 fw-bold">木</div>
+                <div class="calendar-day-header text-center py-2 fw-bold">金</div>
+                <div class="calendar-day-header text-center py-2 fw-bold text-primary">土</div>
+            </div>
+            
+            <!-- Calendar Body -->
+            <div class="calendar-body">
+                {% for week in month_days %}
+                <div class="calendar-week d-flex flex-column flex-md-row">
+                    {% for day in week %}
+                    <div class="calendar-day {% if day|is_today %}today{% endif %} {% if day|is_weekend %}weekend{% endif %}">
+                        {% if day %}
+                        <div class="day-number">
+                            <span class="d-md-none">{{ day|weekday_name }}</span>
+                            {{ day }}
+                        </div>
+                        
+                        <!-- Day's shifts -->
+                        <div class="day-shifts">
+                            {% with day_date=day|date:"Y-m-d" %}
+                            {% for shift_date, day_shifts in shifts_by_date.items %}
+                                {% if shift_date|date:"Y-m-d" == day_date %}
+                                    {% for shift in day_shifts %}
+                                    <div class="shift-item mb-1" style="background-color: {{ shift.shift_type.color_code }}">
+                                        <div class="shift-employee">{{ shift.employee.name|mobile_truncate:8 }}</div>
+                                        <div class="shift-type small">{{ shift.shift_type.name }}</div>
+                                        <div class="shift-time small">
+                                            {{ shift.shift_type.start_time|time:"H:i" }}-{{ shift.shift_type.end_time|time:"H:i" }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                            {% endwith %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Date Navigator -->
+<div class="d-md-none mt-3">
+    <div class="row">
+        <div class="col">
+            <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-outline-primary w-100">
+                <i class="bi bi-chevron-left"></i> {% calendar_month_name prev_month %}
+            </a>
+        </div>
+        <div class="col">
+            <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-outline-primary w-100">
+                {% calendar_month_name next_month %} <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <a href="{% url 'shifts:quick_shift_create' %}" class="btn btn-primary w-100 mb-2">
+                <i class="bi bi-plus-circle"></i> クイックシフト作成
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'shifts:shift_list' %}" class="btn btn-outline-primary w-100 mb-2">
+                <i class="bi bi-list"></i> シフト一覧
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.calendar-header-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-day-header {
+    border-right: 1px solid #dee2e6;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-day-header:last-child {
+    border-right: none;
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+}
+
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    min-height: 120px;
+}
+
+.calendar-day {
+    border: 1px solid #dee2e6;
+    padding: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-day:hover {
+    background-color: #f8f9fa;
+}
+
+.calendar-day.today {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    font-weight: bold;
+}
+
+.calendar-day.weekend {
+    background-color: #fafafa;
+}
+
+.day-number {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.day-shifts {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.shift-item {
+    color: white;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.shift-employee {
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.shift-type, .shift-time {
+    line-height: 1.1;
+    opacity: 0.9;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .calendar-week {
+        display: block;
+    }
+    
+    .calendar-day {
+        border: none;
+        border-bottom: 1px solid #dee2e6;
+        min-height: auto;
+        padding: 1rem;
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .day-number {
+        min-width: 80px;
+        margin-bottom: 0;
+        margin-right: 1rem;
+    }
+    
+    .day-shifts {
+        flex-grow: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .shift-item {
+        flex: 0 0 auto;
+        min-width: 120px;
+    }
+    
+    .calendar-day.today {
+        background-color: #e3f2fd;
+        border-left: 4px solid #2196f3;
+    }
+}
+
+/* Tablet Styles */
+@media (max-width: 992px) and (min-width: 769px) {
+    .calendar-week {
+        min-height: 100px;
+    }
+    
+    .shift-item {
+        font-size: 0.7rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // カレンダーのタッチスクロール対応
+    const calendarBody = document.querySelector('.calendar-body');
+    let isScrolling = false;
+    
+    if (calendarBody) {
+        calendarBody.addEventListener('touchstart', function() {
+            isScrolling = true;
+        });
+        
+        calendarBody.addEventListener('touchend', function() {
+            setTimeout(() => {
+                isScrolling = false;
+            }, 100);
+        });
+    }
+    
+    // シフトアイテムのクリック処理
+    const shiftItems = document.querySelectorAll('.shift-item');
+    shiftItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            if (!isScrolling) {
+                // シフト詳細を表示する処理をここに追加
+                console.log('Shift clicked:', this);
+            }
+        });
+    });
+    
+    // 今日の日付にスクロール
+    const todayElement = document.querySelector('.calendar-day.today');
+    if (todayElement && window.innerWidth <= 768) {
+        todayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+</script>
+{% endblock %}

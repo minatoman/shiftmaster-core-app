@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>勤務希望一覧</title>
+    <!-- Bootstrap CSSを追加 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">勤務希望一覧</h1>
+
+        <!-- 勤務希望が存在しない場合のメッセージ -->
+        {% if requests.count == 0 %}
+        <div class="alert alert-warning">
+            現在、勤務希望はありません。
+        </div>
+        {% endif %}
+
+        <!-- 勤務希望一覧のテーブル -->
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>従業員</th>
+                    <th>希望勤務日</th>
+                    <th>希望勤務タイプ</th>
+                    <th>優先順位</th>
+                    <th>承認状況</th>
+                    <th>承認操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                <tr>
+                    <td>{{ request.employee.name }}</td>
+                    <td>{{ request.requested_date }}</td>
+                    <td>{{ request.get_shift_type_display }}</td>
+                    <td>{{ request.priority }}</td>
+
+                    <!-- 承認状況 -->
+                    <td>
+                        {% if request.shift.is_approved %}
+                            <span class="badge bg-success">承認済み</span>
+                        {% else %}
+                            <span class="badge bg-warning">未承認</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- 承認ボタン（未承認の場合） -->
+                    <td>
+                        {% if not request.shift.is_approved %}
+                            {% if request.shift.id %}
+                                <a href="{% url 'approve_shift' shift_id=request.shift.id %}" class="btn btn-success btn-sm">承認</a>
+                            {% else %}
+                                <span class="text-muted">IDが無効です</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">承認済み</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-center mt-4">
+            <!-- 勤務希望を追加するリンク -->
+            <a href="{% url 'shifts:add_shift' %}" class="btn btn-primary">勤務希望を追加</a>  <!-- 修正: add_shift_request -> add_shift -->
+        </div>
+    </div>
+
+    <!-- Bootstrap JSの追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+
+
