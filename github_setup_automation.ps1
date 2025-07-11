@@ -1,23 +1,30 @@
-# ShiftMaster GitHub Setup Automation Script
-# Execution Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+# ============================================
+# ShiftMaster Git & GitHub 一括セットアップスクリプト
+# 手動実行用 - PowerShell版 (更新版)
+# ============================================
 
-Write-Host "🚀 ShiftMaster GitHub Automation Script Started" -ForegroundColor Green
-Write-Host "================================================" -ForegroundColor Yellow
+Write-Host @"
+� ShiftMaster Git & GitHub 一括セットアップ
 
-# 1. Project Information Display
-Write-Host "📊 Project Information:" -ForegroundColor Cyan
-Write-Host "  - Project Name: ShiftMaster"
-Write-Host "  - Tech Stack: Django 5.2+ / Python 3.8+"
-Write-Host "  - Recommended Repo Name: shiftmaster-django-healthcare"
-Write-Host ""
+このスクリプトは以下を実行します:
+1. 不要ファイル削除
+2. Git初期化
+3. GitHub認証・リポジトリ作成
+4. 初回コミット・プッシュ
+5. 開発環境セットアップ
 
-# 2. Git Status Check
-Write-Host "🔍 Checking Current Git Status..." -ForegroundColor Cyan
-git status
-Write-Host ""
+続行しますか？ (y/N)
+"@ -ForegroundColor Yellow
 
-# 3. GitHub Authentication Check
-Write-Host "🔐 Checking GitHub Authentication..." -ForegroundColor Cyan
+$continue = Read-Host
+if ($continue -ne "y" -and $continue -ne "Y") {
+    Write-Host "❌ セットアップをキャンセルしました" -ForegroundColor Red
+    exit 0
+}
+
+# プロジェクト名設定
+$PROJECT_NAME = "ShiftMaster-Healthcare"
+$PROJECT_DESC = "医療機関向け勤務シフト管理システム (Django) - Healthcare Staff Scheduling System"
 if (Get-Command gh -ErrorAction SilentlyContinue) {
     Write-Host "GitHub CLI is available"
     gh auth status
