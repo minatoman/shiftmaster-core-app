@@ -1,4 +1,9 @@
-﻿# Python
+﻿# ============================================
+# ShiftMaster - Django 勤務管理システム
+# 最適化された .gitignore (2025年版)
+# ============================================
+
+# === Python/Django Core ===
 __pycache__/
 *.py[cod]
 *$py.class
@@ -22,15 +27,27 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# PyInstaller
-*.manifest
-*.spec
+# === Django Framework ===
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static/admin/
+static/debug_toolbar/
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# Django migrations (本番環境では要注意)
+# migrations/
 
-# Unit test / coverage reports
+# Secret settings
+secret_settings.py
+.env
+.env.local
+.env.production
+.env.staging
+
+# === Testing & Coverage ===
 htmlcov/
 .tox/
 .nox/
@@ -45,135 +62,45 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
-
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/#use-with-ide
-.pdm.toml
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
+# === Virtual Environments ===
+.env/
+.venv/
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+new_env/
+.python-version
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# === Package Managers ===
+pip-log.txt
+pip-delete-this-directory.txt
+Pipfile.lock
+poetry.lock
+.pdm.toml
+__pypackages__/
 
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
+# === Cache Files ===
 .mypy_cache/
 .dmypy.json
 dmypy.json
-
-# Pyre type checker
 .pyre/
-
-# pytype static type analyzer
 .pytype/
+*.pyc
 
-# Cython debug symbols
-cython_debug/
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/
-staticfiles/
-
-# Django migrations
-# migrations/
-
-# Virtual environments
-new_env/
-.env
-.venv
-env/
-venv/
-ENV/
-
-# IDE
+# === IDE & Editors ===
 .vscode/
 .idea/
 *.swp
 *.swo
 *.sublime-project
 *.sublime-workspace
+.spyderproject
+.spyproject
+.ropeproject
 
-# OS
+# === OS Generated Files ===
 .DS_Store
 .DS_Store?
 ._*
@@ -181,86 +108,64 @@ ENV/
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# Database
-*.sqlite3
-*.sqlite3-journal
-*.db
-db/
+# === Docker ===
+.docker/
+docker-compose.override.yml
+Dockerfile.local
+.dockerignore
 
-# Logs
-*.log
-logs/
-logfile
-logfile.txt
-
-# Cache files
-.mypy_cache/
-.pytest_cache/
-*.pyc
-
-# Node.js (if any frontend tooling)
+# === Node.js (Frontend Assets) ===
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.npm
+.yarn-integrity
+.next/
+dist/
+out/
 
-# Static files (generated)
-staticfiles/
-static/admin/
-static/debug_toolbar/
+# === Documentation ===
+docs/_build/
+site/
+*.mo
+*.pot
 
-# Media files
-media/
-
-# Local configuration
-local_settings.py
-.env
-*.env
-
-# Backup files
-*.bak
-backup*/
-*backup*
-bup.txt
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
-
-# Generated files
-generated_*
-*generated*
-
-# Error logs
-error_logs/
-
-# SSH keys
+# === Security & Keys ===
 *.pem
 *.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
 id_rsa*
 *.ppk
+ssh_keys/
+certificates/
 
-# Docker
-.docker/
-Dockerfile.local
+# === Logs & Error Files ===
+logs/
+*.log
+logfile
+logfile.txt
+error_logs/
+debug.log
 
-# Celery
-celerybeat-schedule
-celerybeat.pid
+# === Backup & Temporary Files ===
+*.bak
+*.tmp
+*.temp
+backup*/
+*backup*
+tmp/
+temp/
+.backup/
 
-# Coverage
-htmlcov/
-.coverage
-coverage.xml
-*.cover
-
-# pwfile.txt (contains sensitive information)
+# === Project-Specific ===
 pwfile.txt
-
-# Project-specific files to ignore
 prompt_history/
 generated_prompt_*.txt
 ShiftMaster.txt
@@ -268,3 +173,29 @@ ShiftMaster.txt
 *conoha*
 *vps*
 upload_and_deploy.ps1
+
+# === Runtime & Process Files ===
+celerybeat-schedule
+celerybeat.pid
+*.pid
+*.lock
+
+# === Jupyter Notebooks ===
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# === Development Tools ===
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.black/
+pylint.log
+
+# === Production Artifacts ===
+collected_static/
+/static/
+/media/
+/uploads/
+*.sqlite3-wal
+*.sqlite3-shm

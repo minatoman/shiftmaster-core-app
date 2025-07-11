@@ -1,33 +1,40 @@
-# 🚀 ShiftMaster - 勤務シフト管理システム
+# 🏥 ShiftMaster - 医療機関向け勤務シフト管理システム
 
-Djangoベースの医療機関向け勤務シフト管理システム
+[![Django](https://img.shields.io/badge/Django-5.2-green.svg)](https://www.djangoproject.com/)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Djangoベースの医療機関向け勤務シフト管理システム - 複雑な医療現場のシフト調整を効率化
 
 ## 📋 概要
 
-ShiftMasterは医療機関の複雑な勤務シフト管理を効率化するWebアプリケーションです。
+ShiftMasterは医療機関の複雑な勤務シフト管理を効率化するWebアプリケーションです。看護師・医師の勤務スケジュール、透析業務、休暇申請を一元管理できます。
 
-### 主な機能
-- 👥 スタッフ管理
-- 📅 シフト作成・編集
-- 🙋‍♀️ 勤務希望申請
-- 🤖 自動シフト割り当て
-- 📊 月次統計・レポート
-- 💉 透析日誌管理
-- 📤 CSV/Excel インポート・エクスポート
+### ✨ 主な機能
+- 👥 **スタッフ管理** - 従業員情報・職種・資格管理
+- 📅 **シフト作成・編集** - 直感的なカレンダーインターface
+- 🙋‍♀️ **勤務希望申請** - スタッフからの希望申請システム
+- 🤖 **自動シフト割り当て** - AI風自動最適化
+- 📊 **月次統計・レポート** - 勤務実績・コスト分析
+- 💉 **透析日誌管理** - 透析患者・スタッフ管理
+- 📤 **データ連携** - CSV/Excel インポート・エクスポート
+- 🔔 **通知システム** - リアルタイム通知
 
 ## 🛠 技術スタック
 
-- **Backend**: Django 5.2+
-- **Database**: SQLite (開発) / PostgreSQL (本番)
-- **Frontend**: Bootstrap 5, JavaScript
+- **Backend**: Django 5.2+ (Python)
+- **Database**: SQLite (開発) / PostgreSQL (本番推奨)
+- **Frontend**: Bootstrap 5, JavaScript, jQuery
 - **Language**: Python 3.8+
-- **Development**: Django Debug Toolbar
+- **Development**: Django Debug Toolbar, pytest
+- **Deployment**: Docker対応
 
-## 🚀 セットアップ
+## 🚀 クイックスタート
 
 ### 前提条件
 - Python 3.8以上
 - Git
+- pip (Python package manager)
 
 ### インストール手順
 

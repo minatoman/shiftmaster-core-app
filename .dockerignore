@@ -1,23 +1,101 @@
-# Git
+# ============================================
+# .dockerignore for ShiftMaster Django App
+# Dockerイメージから除外するファイル・フォルダ
+# ============================================
+
+# === Git関連 ===
 .git
 .gitignore
-README.md
-.env
-.env.example
-.env.local
-.env.production
-.env.staging
+.gitattributes
 
-# Python
-__pycache__
-*.py[cod]
-*$py.class
-*.so
+# === Documentation ===
+README.md
+README_*.md
+CHANGELOG.md
+LICENSE
+docs/
+*.md
+
+# === Development Tools ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === Python Development ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 .Python
-build
-develop-eggs
-dist
-downloads
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.tox/
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# === Node.js (if frontend build tools) ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Database (Development) ===
+*.sqlite3
+*.db
+db.sqlite3*
+
+# === Logs ===
+*.log
+logs/
+
+# === Backup & Temporary ===
+*.bak
+*.tmp
+backup*/
+tmp/
+
+# === Static Files (Build時に生成) ===
+staticfiles/
+collected_static/
+
+# === Media Files (User Uploads - 本番では別管理) ===
+media/
+
+# === Development Scripts ===
+manage.py
+requirements-dev.txt
+docker-compose.yml
+docker-compose.override.yml
+Dockerfile.dev
+
+# === Test Files ===
+tests/
+test_*.py
+*_test.py
+
+# === CI/CD ===
+.github/
+.gitlab-ci.yml
+Jenkinsfile
+
+# === Project-specific Development Files ===
+prompt_history/
+generated_prompt_*.txt
+*ssh*
+*conoha*
+*vps*
+upload_and_deploy.ps1
+pwfile.txt
 eggs
 .eggs
 lib
