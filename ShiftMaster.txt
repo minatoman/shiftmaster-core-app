@@ -1,0 +1,48 @@
+pcが変わったのでH:\Projects\DjangoProject\HospitalSite-env環境でSQLはH:\db\PostgreSQL-17\pgsql\binを使ってH:\Projects\DjangoProject\dbにデーター収納を再構築　ポートは5441で
+
+
+
+# 仮想環境のactivate
+cd H:\Projects\DjangoProject\HospitalSite-env\Scripts
+.\Activate.ps1
+
+# プロジェクトルートへ
+cd H:\Projects\DjangoProject
+
+# Djangoマイグレーション
+python manage.py migrate
+
+
+
+# === ??? データベース設定（PostgreSQL） ===
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'djangoproject_db',
+        'USER': 'postgres',
+        'PASSWORD': 'pass',  # パスワードの設定
+        'HOST': 'localhost',
+        'PORT': '5441',
+    }
+}
+
+
+.\HospitalSite-env\Scripts\Activate
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+
+上記の構造に変更しました
+下記が現在のsettings.py全文です、修正後の全文お願い
+
+下記が現在のviews.py全文です、修正後の全文お願い
+
+下記が現在のurls.py全文です、修正後の全文お願い
+
+下記が現在のhomepage.html全文です、修正後の全文お願い
+
+下記が現在のmodels.py全文です、修正後の全文お願い
+
+下記すべて文字化け対策で実施たい一括実施パワーシェルコード

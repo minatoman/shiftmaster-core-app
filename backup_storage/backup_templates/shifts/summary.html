@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>月次勤務統計</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        table {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="text-primary">📊 月次勤務統計（職種別）</h2>
+
+    {% if summary %}
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>月</th>
+                    <th>職種</th>
+                    <th>シフト数</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in summary %}
+                    <tr>
+                        <td>{{ row.month|date:"Y年m月" }}</td>
+                        <td>{{ row.employee__position }}</td>
+                        <td>{{ row.count }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            統計データがまだありません。
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'shifts:homepage' %}" class="btn btn-secondary">ホームに戻る</a>
+    </div>
+</div>
+</body>
+</html>
+
+

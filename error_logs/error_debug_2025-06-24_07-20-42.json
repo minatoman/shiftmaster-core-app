@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-06-24 07:20:42",
+  "context": "interactive_mode - 予期しないエラー",
+  "error_type": "EOFError",
+  "error_message": "EOF when reading a line",
+  "traceback": "Traceback (most recent call last):\n  File \"H:\\Projects\\ShiftMaster\\Get_ChildItem_new.py\", line 183, in interactive_mode\n    save_choice = input(\n                  ^^^^^^\nEOFError: EOF when reading a line\n",
+  "system_info": {
+    "platform": "Windows-11-10.0.26100-SP0",
+    "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "working_directory": "H:\\Projects\\ShiftMaster"
+  }
+}

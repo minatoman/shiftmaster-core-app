@@ -1,13 +1,12 @@
-﻿# ============================================
-# ShiftMaster - Django 勤務管理システム
-# 最適化された .gitignore (2025年版)
-# ============================================
-
-# === Python/Django Core ===
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -21,86 +20,97 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# === Django Framework ===
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-media/
-staticfiles/
-static/admin/
-static/debug_toolbar/
+# PyInstaller
+*.manifest
+*.spec
 
-# Django migrations (本番環境では要注意)
-# migrations/
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Secret settings
-secret_settings.py
-.env
-.env.local
-.env.production
-.env.staging
-
-# === Testing & Coverage ===
+# Unit test / coverage reports
 htmlcov/
 .tox/
-.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 .hypothesis/
 .pytest_cache/
-cover/
 
-# === Virtual Environments ===
-.env/
-.venv/
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-new_env/
-.python-version
 
-# === Package Managers ===
-pip-log.txt
-pip-delete-this-directory.txt
-Pipfile.lock
-poetry.lock
-.pdm.toml
-__pypackages__/
+# Spyder project settings
+.spyderproject
+.spyproject
 
-# === Cache Files ===
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
-.pyre/
-.pytype/
-*.pyc
 
-# === IDE & Editors ===
+# IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
-*.sublime-project
-*.sublime-workspace
-.spyderproject
-.spyproject
-.ropeproject
+*~
 
-# === OS Generated Files ===
+# OS
 .DS_Store
 .DS_Store?
 ._*
@@ -108,94 +118,9 @@ dmypy.json
 .Trashes
 ehthumbs.db
 Thumbs.db
-desktop.ini
 
-# === Docker ===
-.docker/
-docker-compose.override.yml
-Dockerfile.local
+# Docker
 .dockerignore
-
-# === Node.js (Frontend Assets) ===
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.npm
-.yarn-integrity
-.next/
-dist/
-out/
-
-# === Documentation ===
-docs/_build/
-site/
-*.mo
-*.pot
-
-# === Security & Keys ===
-*.pem
-*.key
-*.p12
-*.pfx
-*.crt
-*.cer
-*.der
-id_rsa*
-*.ppk
-ssh_keys/
-certificates/
-
-# === Logs & Error Files ===
-logs/
-*.log
-logfile
-logfile.txt
-error_logs/
-debug.log
-
-# === Backup & Temporary Files ===
-*.bak
-*.tmp
-*.temp
-backup*/
-*backup*
-tmp/
-temp/
-.backup/
-
-# === Project-Specific ===
-pwfile.txt
-prompt_history/
-generated_prompt_*.txt
-ShiftMaster.txt
-*ssh*
-*conoha*
-*vps*
-upload_and_deploy.ps1
-
-# === Runtime & Process Files ===
-celerybeat-schedule
-celerybeat.pid
-*.pid
-*.lock
-
-# === Jupyter Notebooks ===
-.ipynb_checkpoints
-profile_default/
-ipython_config.py
-
-# === Development Tools ===
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.black/
-pylint.log
-
-# === Production Artifacts ===
-collected_static/
-/static/
-/media/
-/uploads/
-*.sqlite3-wal
-*.sqlite3-shm
+Dockerfile
+docker-compose.yml
+docker-compose.yaml

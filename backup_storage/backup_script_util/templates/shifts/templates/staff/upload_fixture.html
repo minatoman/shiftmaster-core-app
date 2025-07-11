@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>📂 スタッフデータ一括インポート</h2>
+
+  {% if messages %}
+    <div class="alert alert-info">
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" class="mt-4">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="data_file" class="form-label">CSVまたはJSONファイルを選択:</label>
+      <input type="file" class="form-control" id="data_file" name="data_file" required>
+    </div>
+    <button type="submit" class="btn btn-primary">アップロード</button>
+  </form>
+
+  <div class="mt-4">
+    <p>✅ 対応形式： <code>.csv</code> または <code>.json</code>（Django loaddata 形式）</p>
+    <p>📄 ファイル構成例については、<code>ShiftMaster_Staff_Data_Template.csv</code> を参照してください。</p>
+  </div>
+</div>
+{% endblock %}
+
+
+

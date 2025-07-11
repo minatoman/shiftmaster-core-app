@@ -1,0 +1,81 @@
+# VPS緊急復旧手順
+
+## 現在の問題
+- apt update/upgrade が "Scanning processes..." で停止
+- プロセスが応答しない状態
+
+## 解決手順
+
+### 1. プロセス強制終了
+```bash
+# Ctrl+C で中断を試行
+# または以下のコマンド
+
+sudo pkill -f apt
+sudo pkill -f dpkg
+sudo pkill -f unattended-upgrade
+
+# ロックファイル削除
+sudo rm -f /var/lib/dpkg/lock-frontend
+sudo rm -f /var/lib/dpkg/lock
+sudo rm -f /var/cache/apt/archives/lock
+sudo rm -f /var/lib/apt/lists/lock
+```
+
+### 2. パッケージ状態を修復
+```bash
+# パッケージデータベースを修復
+sudo dpkg --configure -a
+
+# 破損したパッケージをクリーンアップ
+sudo apt --fix-broken install
+
+# キャッシュをクリア
+sudo apt clean
+sudo apt autoclean
+```
+
+### 3. 段階的な更新
+```bash
+# パッケージリストのみ更新
+sudo apt update
+
+# 重要なパッケージのみ先に更新
+sudo apt install -y python3-pip python3-venv
+
+# 必要最小限のパッケージをインストール
+sudo apt install -y nginx supervisor
+```
+
+### 4. VPS再起動（最終手段）
+コノハVPSコンソールから「再起動」ボタンを押す
+
+### 5. 代替アプローチ
+問題が解決しない場合、以下のアプローチを検討：
+- Dockerを使用したコンテナデプロイ
+- 別のVPSインスタンスでの再構築
+- Snapパッケージの使用
+
+## Djangoプロジェクトデプロイの簡略化
+
+### 最小構成でのデプロイ
+```bash
+# Python環境のみセットアップ
+sudo apt update
+sudo apt install -y python3-pip python3-venv nginx
+
+# 手動でGunicornとDjangoをインストール
+cd /tmp
+python3 -m venv temp_env
+source temp_env/bin/activate
+pip install django gunicorn
+
+# プロジェクトディレクトリにコピー
+sudo mkdir -p /var/www/shiftmaster
+sudo chown $USER:$USER /var/www/shiftmaster
+```
+
+## 注意事項
+- 作業前にプロジェクトファイルのバックアップを取る
+- VPS再起動時は一時的にサービスが停止する
+- データベースがある場合は事前にバックアップを取る

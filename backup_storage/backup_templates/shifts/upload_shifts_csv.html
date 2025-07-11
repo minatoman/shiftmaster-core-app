@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4 text-center text-primary">📤 シフトCSVアップロード（管理者専用）</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="閉じる"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="border rounded p-4 bg-light shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="csv_file" class="form-label fw-bold">CSVファイルを選択</label>
+            <input type="file" name="csv_file" id="csv_file" class="form-control" accept=".csv" required>
+            <div class="form-text text-muted">
+                必須列：<code>氏名</code>, <code>日付</code>, <code>勤務区分</code>, <code>配置先</code>, <code>備考</code><br>
+                <span class="text-danger">※ 氏名の全角・半角スペースや日付形式に注意してください</span><br>
+                <strong>例：</strong><br>
+                神 道人,2025-04-01,AM,透析業務,"特記事項なし"
+            </div>
+        </div>
+
+        <div class="d-flex">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-upload me-1"></i> アップロード実行
+            </button>
+            <a href="{% url 'shifts:shift_list' %}" class="btn btn-secondary ms-2">
+                <i class="bi bi-arrow-left"></i> シフト一覧へ戻る
+            </a>
+        </div>
+    </form>
+
+    <hr class="my-5">
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="alert alert-info d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>📁 サンプルCSV:</strong>
+                    <a href="{% static 'template_shift_upload.csv' %}" class="btn btn-outline-primary btn-sm ms-2">
+                        ダウンロード（template_shift_upload.csv）
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if request.session.error_log_file %}
+        <div class="col-md-6">
+            <div class="alert alert-warning d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>🧾 エラーログCSV:</strong>
+                    <a href="{% url 'shifts:download_error_log_csv' %}?file={{ request.session.error_log_file }}" class="btn btn-outline-danger btn-sm ms-2">
+                        エラーログをダウンロード
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,34 +1,28 @@
-version: "3.8"
+version: '3.8'
 
 services:
   web:
     build: .
     ports:
-      - "8003:8000" # 外部ポートを8003に変更
+      - "8000:8000"
     volumes:
       - .:/app
     environment:
       - DEBUG=1
-      - SECRET_KEY=django-insecure-docker-dev-key
+      - DJANGO_SETTINGS_MODULE=ShiftMaster.settings
     depends_on:
       - db
-    command: python manage.py runserver 0.0.0.0:8000
 
   db:
-    image: postgres:15
+    image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=shiftmaster_db
+      - POSTGRES_DB=ShiftMaster
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "5434:5432"
-
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6381:6379"
+      - "5432:5432"
 
 volumes:
   postgres_data:

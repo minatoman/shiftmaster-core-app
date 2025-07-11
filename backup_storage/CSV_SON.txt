@@ -1,0 +1,5 @@
+# データベースをJSON形式でバックアップ
+python manage.py dumpdata --output=H:/Projects/ShiftMaster/backup/database_backups/shiftmaster_db.json
+
+# データベースをCSV形式でバックアップ
+python manage.py inspectdb --output=H:/Projects/ShiftMaster/backup/database_backups/shiftmaster_db.csv

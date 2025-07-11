@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>勤務希望の追加</title>
+</head>
+<body>
+    <h1>勤務希望の追加</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">勤務希望を保存</button>
+    </form>
+    <a href="{% url 'shifts:shift_request_list' %}">勤務希望一覧に戻る</a>
+</body>
+</html>
+
+

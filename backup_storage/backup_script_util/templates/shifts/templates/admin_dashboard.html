@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}管理者ダッシュボード（統計）{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2><i class="bi bi-bar-chart-line-fill"></i> 管理者ダッシュボード</h2>
+    <hr>
+
+    <div class="row g-4 mt-3">
+        <!-- 未承認勤務希望 -->
+        <div class="col-md-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-exclamation-circle"></i> 未承認の勤務希望</h5>
+                    <p>現在 <strong class="text-danger">{{ unapproved.count }}</strong> 件の勤務希望が未承認です。</p>
+                    <a href="{% url 'shifts:shift_request_list' %}" class="btn btn-outline-danger btn-sm">勤務希望一覧へ</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- スタッフ登録 -->
+        <div class="col-md-6">
+            <div class="card border-info shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-people-fill"></i> 登録スタッフ数</h5>
+                    <p>現在 <strong class="text-info">{{ employees.count }}</strong> 名のスタッフが登録されています。</p>
+                    <a href="{% url 'shifts:employee_list' %}" class="btn btn-outline-info btn-sm">スタッフ一覧へ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 勤務件数グラフ -->
+    <div class="card mt-5 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title"><i class="bi bi-graph-up-arrow"></i> 月別 × 職種別 勤務件数</h4>
+            <canvas id="shiftChart" height="220"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartData = {{ chart_data|safe }};
+    const months = Object.keys(chartData);
+    const roles = new Set();
+    months.forEach(month => {
+        Object.keys(chartData[month]).forEach(role => roles.add(role));
+    });
+
+    const datasets = Array.from(roles).map((role, index) => ({
+        label: role,
+        data: months.map(month => chartData[month][role] || 0),
+        fill: false,
+        borderColor: `hsl(${index * 60 % 360}, 70%, 50%)`,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6
+    }));
+
+    new Chart(document.getElementById('shiftChart'), {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: { size: 13 }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: '月別 × 職種別 勤務件数',
+                    font: { size: 16 }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+

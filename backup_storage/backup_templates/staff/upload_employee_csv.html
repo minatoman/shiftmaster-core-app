@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}スタッフCSVアップロード{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4"><i class="bi bi-upload"></i> スタッフCSVアップロード</h2>
+
+  <form method="post" enctype="multipart/form-data" class="border p-4 shadow-sm rounded bg-light">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="csv_file" class="form-label fw-bold">
+        <i class="bi bi-filetype-csv"></i> CSVファイルを選択（拡張子 .csv）
+      </label>
+      <input type="file" name="csv_file" id="csv_file" accept=".csv" class="form-control" required>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-cloud-arrow-up-fill"></i> アップロード
+      </button>
+      <a href="{% url 'shifts:employee_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left-circle"></i> 戻る
+      </a>
+    </div>
+  </form>
+
+  <div class="alert alert-warning mt-4" role="alert">
+    ⚠️ <strong>注意：</strong> ヘッダー行がシステムと一致している必要があります。テンプレートCSVが必要な場合はご連絡ください。
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザー詳細プロフィール</title>
+    <!-- Bootstrap CSSを追加 -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="my-4 text-center">{{ user.username }} さんのプロフィール</h1>
+
+                <!-- ユーザー情報表示 -->
+                <div class="list-group">
+                    <p class="list-group-item"><strong>名前:</strong> {{ user.get_full_name }}</p>
+                    <p class="list-group-item"><strong>Email:</strong> {{ user.email }}</p>
+                    <p class="list-group-item"><strong>役職:</strong> {{ user.profile.position }}</p> <!-- 役職を表示 -->
+                </div>
+
+                <!-- シフト履歴 -->
+                <h3 class="my-4">シフト履歴</h3>
+                {% if user.shifts.count == 0 %}
+                    <div class="alert alert-warning text-center">
+                        現在、シフト履歴はありません。
+                    </div>
+                {% else %}
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>シフト日</th>
+                                <th>勤務区分</th>
+                                <th>承認状態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for shift in user.shifts.all %}
+                            <tr>
+                                <td>{{ shift.shift_date }}</td>
+                                <td>{{ shift.get_shift_type_display }}</td>
+                                <td>{{ shift.is_approved|yesno:"承認済み,未承認" }}</td> <!-- 承認状態を表示 -->
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+                <!-- ログアウトボタン -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'shifts:logout' %}" class="btn btn-danger btn-block">ログアウト</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JSの追加 -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
+
+

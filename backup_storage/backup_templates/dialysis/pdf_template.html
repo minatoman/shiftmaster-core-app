@@ -1,0 +1,61 @@
+<!-- templates/dialysis/pdf_template.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: "Arial", sans-serif; font-size: 10pt; }
+        h2, h3 { text-align: center; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid #444; padding: 5px; }
+        th { background-color: #f0f0f0; }
+    </style>
+</head>
+<body>
+
+<h2>{{ date|date:"Y年m月d日" }} 透析日誌</h2>
+
+<h3>🩺 患者情報</h3>
+<table>
+    <thead>
+        <tr>
+            <th>名前</th><th>透析時間</th><th>性別</th><th>地域</th><th>備考</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in patients %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.dialysis_time }}</td>
+            <td>{{ p.gender }}</td>
+            <td>{{ p.area }}</td>
+            <td>{{ p.remarks }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>👩‍⚕️ 勤務者情報</h3>
+<table>
+    <thead>
+        <tr>
+            <th>名前</th><th>勤務形態</th><th>職種</th><th>AM備考</th><th>PM備考</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in staff %}
+        <tr>
+            <td>{{ s.name }}</td>
+            <td>{{ s.shift_type }}</td>
+            <td>{{ s.role }}</td>
+            <td>{{ s.remarks_am }}</td>
+            <td>{{ s.remarks_pm }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
+
+

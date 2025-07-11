@@ -1,0 +1,17 @@
+<!-- import.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">📥 データインポート</h2>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">ファイルを選択</label>
+      <input type="file" name="file" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">インポート</button>
+  </form>
+</div>
+{% endblock %}
+
+
+

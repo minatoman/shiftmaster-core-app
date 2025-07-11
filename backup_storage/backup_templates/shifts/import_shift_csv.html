@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">📥 勤務希望CSVインポート</h2>
+
+    <form method="post" enctype="multipart/form-data" class="border p-4 rounded bg-light shadow-sm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="csvFile" class="form-label">CSVファイルを選択してください（UTF-8形式）</label>
+            <input class="form-control" type="file" id="csvFile" name="csv_file" accept=".csv" required>
+        </div>
+        <button type="submit" class="btn btn-primary">アップロード</button>
+        <a href="{% url 'shifts:shift_request_list' %}" class="btn btn-secondary ms-2">キャンセル</a>
+    </form>
+
+    <div class="mt-4">
+        <p>📌 インポート形式に必要な列:</p>
+        <ul>
+            <li><strong>氏名</strong>（従業員の名前）</li>
+            <li><strong>希望日</strong>（例：2025-04-15）</li>
+            <li><strong>勤務区分</strong>（morning / afternoon / night）</li>
+            <li><strong>優先度</strong>（任意）</li>
+        </ul>
+        <p>💡 不明点がある場合は <code>sample_shift_requests.csv</code> をダウンロードしてご確認ください。</p>
+        <a href="/static/sample_shift_requests.csv" class="btn btn-outline-info">サンプルCSVをダウンロード</a>
+    </div>
+</div>
+{% endblock %}
+
+

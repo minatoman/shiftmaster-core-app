@@ -1,0 +1,9 @@
+H:\Projects\ShiftMaster\templates\form_bootstrap5.html
+H:\Projects\ShiftMaster\templates\registration\login.html
+H:\Projects\ShiftMaster\templates\registration\signup.html
+H:\Projects\ShiftMaster\shifts\templates\shifts\add_employee_role.html
+H:\Projects\ShiftMaster\shifts\templates\shifts\add_shift_request.html
+H:\Projects\ShiftMaster\shifts\templates\shifts\approve_shift.html
+H:\Projects\ShiftMaster\shifts\templates\shifts\create_user.html
+H:\Projects\ShiftMaster\shifts\templates\shifts\login.html
+H:\Projects\ShiftMaster\shifts\templates\staff\employee_edit.html

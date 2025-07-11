@@ -1,0 +1,9 @@
+<td>
+    {% if shift.employee.shift_set.all|length > 0 %}
+      ✅ 割当済み
+    {% else %}
+      ⏳ 未割当
+    {% endif %}
+  </td>
+  
+

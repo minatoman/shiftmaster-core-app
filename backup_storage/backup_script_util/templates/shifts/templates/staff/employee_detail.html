@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">スタッフ詳細：{{ employee.name }}</h2>
+    <table class="table table-bordered table-hover">
+        <tr><th>ふりがな</th><td>{{ employee.name_kana }}</td></tr>
+        <tr><th>性別</th><td>{{ employee.gender }}</td></tr>
+        <tr><th>生年月日</th><td>{{ employee.birth_date }}</td></tr>
+        <tr><th>メール</th><td>{{ employee.email }}</td></tr>
+        <tr><th>電話番号</th><td>{{ employee.phone }}</td></tr>
+        <tr><th>部署</th><td>{{ employee.department }}</td></tr>
+        <tr><th>職種</th><td>{{ employee.position }}</td></tr>
+        <tr><th>雇用形態</th><td>{{ employee.employment_type }}</td></tr>
+        <tr><th>勤務開始日</th><td>{{ employee.hire_date }}</td></tr>
+        <tr><th>有効</th><td>{{ employee.is_active|yesno:"✔,✘" }}</td></tr>
+        <tr><th>備考</th><td>{{ employee.notes }}</td></tr>
+    </table>
+    <div class="mt-3">
+        <a href="{% url 'staff:edit_employee' employee.id %}" class="btn btn-warning">編集</a>
+        <a href="{% url 'staff:employee_list' %}" class="btn btn-secondary">一覧に戻る</a>
+    </div>
+</div>
+{% endblock %}
+
+
+

@@ -1,0 +1,16 @@
+H:\Projects\ShiftMaster\backup
+„¥„Ÿ„Ÿ config
+„    „¤„Ÿ„Ÿ settings.py
+„    „¤„Ÿ„Ÿ requirements.txt
+„    „¤„Ÿ„Ÿ .env
+„¥„Ÿ„Ÿ system_scripts
+„    „¤„Ÿ„Ÿ install_requirements.ps1
+„    „¤„Ÿ„Ÿ setup_database.ps1
+„    „¤„Ÿ„Ÿ setup_environment.ps1
+„¥„Ÿ„Ÿ database_backups
+„    „¤„Ÿ„Ÿ shiftmaster_db.json
+„    „¤„Ÿ„Ÿ shiftmaster_db.csv
+„¤„Ÿ„Ÿ modules
+    „¤„Ÿ„Ÿ Django
+    „¤„Ÿ„Ÿ PostgreSQL
+    „¤„Ÿ„Ÿ Dependencies

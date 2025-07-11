@@ -1,0 +1,10 @@
+✅ Seleniumスクリーンショット取得の準備
+1. pip install selenium
+2. 最新 ChromeDriver をダウンロード（https://chromedriver.chromium.org/downloads）
+3. Python スクリプトで以下を実行:
+
+from selenium import webdriver
+driver = webdriver.Chrome(executable_path="C:/Path/to/chromedriver.exe")
+driver.get("http://127.0.0.1:8000/login/")
+driver.save_screenshot("login_page.png")
+driver.quit()

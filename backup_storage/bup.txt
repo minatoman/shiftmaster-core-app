@@ -1,0 +1,2 @@
+# ZIP化のためのスクリプト
+Compress-Archive -Path "H:\Projects\ShiftMaster\backup\*" -DestinationPath "H:\Projects\ShiftMaster\backup.zip"

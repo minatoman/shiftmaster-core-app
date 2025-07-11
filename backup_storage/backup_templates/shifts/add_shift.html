@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シフトの追加</title>
+    <!-- Bootstrap CSSを追加 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .btn-block {
+            width: 100%;
+        }
+        .alert {
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">シフトの追加</h1>
+
+        <!-- 成功メッセージ -->
+        {% if messages %}
+            <div class="alert alert-success">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- エラーメッセージ -->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <p>フォームにエラーがあります。確認してください。</p>
+            </div>
+        {% endif %}
+
+        <!-- シフト追加フォーム -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3 mb-3">
+                <label for="employee">従業員</label>
+                {{ form.employee }}
+            </div>
+            <div class="mb-3 mb-3">
+                <label for="shift_date">勤務日</label>
+                {{ form.shift_date }}
+            </div>
+            <div class="mb-3 mb-3">
+                <label for="shift_type">勤務タイプ</label>
+                {{ form.shift_type }}
+            </div>
+            <div class="mb-3 mb-3">
+                <label for="is_approved">承認状態</label>
+                {{ form.is_approved }}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">シフトを保存</button>
+        </form>
+
+        <!-- 戻るリンク -->
+        <div class="text-center mt-4">
+            <a href="{% url 'shifts:shift_list' %}" class="btn btn-secondary">シフト一覧に戻る</a>
+            <br><br>
+            <a href="{% url 'shifts:add_holiday_request' %}" class="btn btn-info">休暇希望を追加</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JSの追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+

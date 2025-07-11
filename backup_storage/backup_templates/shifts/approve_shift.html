@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>シフト承認</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h3 {
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+        }
+        button {
+            padding: 10px 20px;
+            color: white;
+            background-color: #27ae60;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        button[disabled] {
+            background-color: #95a5a6;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f39c12;
+            color: white;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>シフト承認</h1>
+    <h3>従業員: {{ shift.employee.name }}</h3>
+    <h3>勤務日: {{ shift.shift_date }}</h3>
+    <h3>勤務タイプ: {{ shift.get_shift_type_display }}</h3>
+
+    <!-- メッセージの表示 -->
+    {% if messages %}
+        <div class="message">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- 承認フォーム -->
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if not shift.is_approved %}
+            <button type="submit">承認</button>
+        {% else %}
+            <button type="button" disabled>承認済み</button>
+        {% endif %}
+    </form>
+
+    <br>
+    <a href="{% url 'shifts:shift_list' %}">シフト一覧に戻る</a>
+</body>
+</html>
+
+

@@ -1,188 +1,27 @@
-# ============================================
-# .dockerignore for ShiftMaster Django App
-# Dockerイメージから除外するファイル・フォルダ
-# ============================================
-
-# === Git関連 ===
 .git
 .gitignore
-.gitattributes
-
-# === Documentation ===
 README.md
-README_*.md
-CHANGELOG.md
-LICENSE
-docs/
-*.md
-
-# === Development Tools ===
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# === Python Development ===
-__pycache__/
+Dockerfile
+.dockerignore
+docker-compose.yml
+.env
+.venv
+venv/
+__pycache__
 *.pyc
 *.pyo
 *.pyd
 .Python
-.pytest_cache/
-.mypy_cache/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
 .coverage
-htmlcov/
-.tox/
-.env
-.venv/
-venv/
-env/
-ENV/
-
-# === Node.js (if frontend build tools) ===
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-
-# === OS Files ===
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# === Database (Development) ===
-*.sqlite3
-*.db
-db.sqlite3*
-
-# === Logs ===
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 *.log
-logs/
-
-# === Backup & Temporary ===
-*.bak
-*.tmp
-backup*/
-tmp/
-
-# === Static Files (Build時に生成) ===
-staticfiles/
-collected_static/
-
-# === Media Files (User Uploads - 本番では別管理) ===
-media/
-
-# === Development Scripts ===
-manage.py
-requirements-dev.txt
-docker-compose.yml
-docker-compose.override.yml
-Dockerfile.dev
-
-# === Test Files ===
-tests/
-test_*.py
-*_test.py
-
-# === CI/CD ===
-.github/
-.gitlab-ci.yml
-Jenkinsfile
-
-# === Project-specific Development Files ===
-prompt_history/
-generated_prompt_*.txt
-*ssh*
-*conoha*
-*vps*
-upload_and_deploy.ps1
-pwfile.txt
-eggs
-.eggs
-lib
-lib64
-parts
-sdist
-var
-wheels
-*.egg-info
-.installed.cfg
-*.egg
-MANIFEST
-
-# Virtual environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-new_env/
-
-# IDE
-.vscode
-.idea
-*.swp
-*.swo
 .DS_Store
-Thumbs.db
-
-# Logs
-*.log
-logs/
-logfile
-logfile.txt
-
-# Database
-*.sqlite3
-*.sqlite3-journal
-*.db
-db/
-
-# Static files
-staticfiles/
-static/admin/
-media/
-
-# Cache
 .mypy_cache
 .pytest_cache
-*.pyc
-__pycache__/
-
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-
-# Documentation
-docs/_build/
-
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Backup and temporary files
-*.bak
-backup*/
-*backup*
-tmp/
-temp/
-*.tmp
-*.temp
-
-# Project-specific
-generated_prompt_*.txt
-ShiftMaster.txt
-*ssh*
-*conoha*
-*vps*
-upload_and_deploy.ps1
-pwfile.txt
-prompt_history/
-error_logs/
