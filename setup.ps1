@@ -36,7 +36,8 @@ Write-Host "📋 Python バージョン確認..." -ForegroundColor Yellow
 try {
     $pythonVersion = python --version 2>&1
     Write-Host "✅ Python: $pythonVersion" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "❌ Pythonが見つかりません。Python 3.8以上をインストールしてください。" -ForegroundColor Red
     exit 1
 }
@@ -51,7 +52,8 @@ if (-not $SkipVenv) {
             Remove-Item -Recurse -Force venv
             python -m venv venv
         }
-    } else {
+    }
+    else {
         python -m venv venv
     }
     

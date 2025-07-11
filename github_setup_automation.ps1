@@ -28,7 +28,8 @@ $PROJECT_DESC = "医療機関向け勤務シフト管理システム (Django) - 
 if (Get-Command gh -ErrorAction SilentlyContinue) {
     Write-Host "GitHub CLI is available"
     gh auth status
-} else {
+}
+else {
     Write-Host "⚠️ GitHub CLI not found" -ForegroundColor Yellow
     Write-Host "Please create GitHub repository manually:"
     Write-Host "1. Go to https://github.com/new"
