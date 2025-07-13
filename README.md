@@ -1,9 +1,10 @@
-# 🏥 ShiftMaster - 医療シフト管理システム
+# 🩺 ShiftMaster - 医療シフト管理システム完全版
 
-[![Deploy Status](https://img.shields.io/badge/deploy-ready-green.svg)](https://github.com/minatoman/shiftmaster-core-app)
-[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](./docker-compose.prod.yml)
-[![Security](https://img.shields.io/badge/security-HIPAA--ready-red.svg)](./DEPLOYMENT_GUIDE.md)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Build Status](https://github.com/minatoman/shiftmaster-core-app/workflows/CI/badge.svg)](https://github.com/minatoman/shiftmaster-core-app/actions)
+[![Security Scan](https://github.com/minatoman/shiftmaster-core-app/workflows/Security/badge.svg)](https://github.com/minatoman/shiftmaster-core-app/actions)
+[![Coverage](https://codecov.io/gh/minatoman/shiftmaster-core-app/branch/main/graph/badge.svg)](https://codecov.io/gh/minatoman/shiftmaster-core-app)
+[![HIPAA Compliance](https://img.shields.io/badge/HIPAA-Compliant-green)](./SECURITY_DESIGN.md)
+[![Performance](https://img.shields.io/badge/Performance-Optimized-blue)](./PERFORMANCE_OPTIMIZATION.md)
 
 > 医療施設向け24時間安定運用対応のシフト管理システム
 
