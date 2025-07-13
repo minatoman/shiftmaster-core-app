@@ -198,3 +198,256 @@ collected_static/
 /uploads/
 *.sqlite3-wal
 *.sqlite3-shm
+
+# === Medical System Specific ===
+# 医療データ・患者情報 (絶対に除外)
+patient_data/
+medical_records/
+hipaa_audit/
+phi_data/
+*.phi
+*.medical
+encrypted_backup/
+audit_reports/
+compliance_logs/
+
+# === AI/ML Model Files ===
+models/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+*.pb
+*.tflite
+checkpoints/
+tensorboard_logs/
+mlruns/
+
+# === Modern Development Tools ===
+# GitHub Copilot
+.github_copilot/
+copilot_logs/
+
+# VS Code Extensions
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+.vscode/extensions.json
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+*.sublime-session
+
+# Vim/Neovim
+*.swp
+*.swo
+*~
+Session.vim
+.netrwhist
+
+# === Cloud & Infrastructure ===
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+*.kubeconfig
+k8s-secrets/
+helm-charts/*/charts/
+helm-charts/*/Chart.lock
+
+# AWS/Azure/GCP
+.aws/
+.azure/
+.gcloud/
+*.pem
+*.p12
+service-account*.json
+
+# === Container & Orchestration ===
+# Docker
+.dockerignore.backup
+docker-compose.override.yml
+docker-compose.local.yml
+.docker/
+Dockerfile.dev
+Dockerfile.test
+.hadolint.yaml
+
+# === Security & Compliance ===
+# SSL/TLS証明書
+ssl/
+certs/
+private_keys/
+*.csr
+*.p7b
+*.p7c
+*.pfx
+
+# セキュリティスキャン結果
+security_reports/
+vulnerability_scan/
+*.sarif
+bandit_report.json
+safety_report.json
+
+# OWASP ZAP
+zap_reports/
+*.zap
+
+# === Performance & Monitoring ===
+# パフォーマンス測定
+performance_reports/
+load_test_results/
+profiling_data/
+*.prof
+
+# 監視・メトリクス
+metrics/
+monitoring_data/
+grafana_data/
+prometheus_data/
+
+# === Database ===
+# データベースダンプ
+*.sql.gz
+*.sql.bz2
+database_dumps/
+db_snapshots/
+
+# Database specific
+*.db-journal
+*.db-wal
+*.db-shm
+
+# === Localization ===
+# 翻訳ファイル
+locale/*/LC_MESSAGES/*.mo
+translations/*.po~
+*.pot~
+
+# === Testing Extended ===
+# テスト結果・レポート
+test_reports/
+test_results/
+junit.xml
+pytest_report.html
+htmlcov/
+.coverage.*
+coverage.xml
+
+# E2E Testing
+e2e_reports/
+screenshots/
+videos/
+cypress/videos/
+cypress/screenshots/
+
+# === Build & Distribution ===
+# Python distribution
+build/
+dist/
+*.egg-info/
+wheels/
+
+# Node.js build
+build/
+dist/
+.next/
+.nuxt/
+.output/
+
+# === Environment & Configuration ===
+# Environment files (all variants)
+.env*
+!.env.example
+config.local.*
+settings.local.*
+local_settings.py
+
+# === Backup & Archive ===
+# 自動バックアップ
+*.backup
+*.bak~
+auto_backup/
+incremental_backup/
+full_backup/
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.7z
+*.rar
+
+# === Medical Compliance & Audit ===
+# 監査証跡
+audit_trail/
+compliance_check/
+regulatory_reports/
+inspection_logs/
+
+# 医療認証関連
+certification_docs/
+validation_reports/
+fda_submissions/
+
+# === Mobile Development ===
+# React Native
+.expo/
+.expo-shared/
+
+# Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# === Analytics & Telemetry ===
+analytics_data/
+telemetry_logs/
+usage_stats/
+error_reports/
+
+# === Temporary Development ===
+# 開発中一時ファイル
+scratch/
+playground/
+experiments/
+prototypes/
+spike/
+proof_of_concept/
+
+# TODO/FIXME files
+TODO.txt
+FIXME.txt
+NOTES.txt
+
+# === Legal & Documentation ===
+# 法的文書 (バージョン管理外)
+legal_docs/
+contracts/
+nda/
+privacy_policy_drafts/
+
+# === System Administration ===
+# システム管理ファイル
+system_logs/
+maintenance_logs/
+deployment_logs/
+migration_logs/
+
+# cron jobs
+*.cron
+crontab.backup
+
+# === End of File ===
