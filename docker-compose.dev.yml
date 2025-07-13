@@ -1,0 +1,91 @@
+# ============================================
+# ShiftMaster - Docker Compose 開発環境構成
+# SQLite + Hot Reload + Debug Tools
+# ============================================
+
+version: '3.8'
+
+services:
+  # === Django Development Server ===
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: shiftmaster_dev
+    restart: unless-stopped
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-dev-secret-key-not-for-production
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,web
+    volumes:
+      - .:/app
+      - dev_static:/app/staticfiles
+      - dev_media:/app/media
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    networks:
+      - shiftmaster_dev_network
+    command: python manage.py runserver 0.0.0.0:8000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # === PostgreSQL for Development (Optional) ===
+  db:
+    image: postgres:15-alpine
+    container_name: shiftmaster_dev_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shiftmaster_dev
+      POSTGRES_USER: dev_user
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      - dev_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    networks:
+      - shiftmaster_dev_network
+    profiles:
+      - with-db  # Optional service (use with --profile with-db)
+
+  # === Redis for Development (Optional) ===
+  redis:
+    image: redis:7-alpine
+    container_name: shiftmaster_dev_redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts
+    networks:
+      - shiftmaster_dev_network
+    profiles:
+      - with-redis  # Optional service (use with --profile with-redis)
+
+  # === MailHog (Email Testing) ===
+  mailhog:
+    image: mailhog/mailhog
+    container_name: shiftmaster_mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP port
+      - "8025:8025"  # Web UI port
+    networks:
+      - shiftmaster_dev_network
+    profiles:
+      - with-mail  # Optional service for email testing
+
+volumes:
+  dev_postgres_data:
+    driver: local
+  dev_static:
+    driver: local
+  dev_media:
+    driver: local
+
+networks:
+  shiftmaster_dev_network:
+    driver: bridge
