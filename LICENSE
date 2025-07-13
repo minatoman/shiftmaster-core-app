@@ -1,0 +1,69 @@
+MIT License
+
+Copyright (c) 2025 ShiftMaster Development Team
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 追加免責事項 - 医療システム使用に関して
+
+### 医療用途での使用について
+
+このソフトウェア（ShiftMaster）は医療施設でのシフト管理を支援するツールとして開発されていますが、
+以下の重要な免責事項をご理解の上でご使用ください：
+
+1. **医療判断の代替ではありません**
+   - このシステムは医療従事者のスケジュール管理を支援するものであり、医療判断や臨床決定の代替となるものではありません
+   - 医療に関する最終的な判断は、必ず資格を持つ医療従事者が行ってください
+
+2. **生命に関わる重要なシステムでの使用**
+   - このソフトウェアは生命維持装置や緊急医療システムなど、生命に直接関わる重要なシステムでの使用を意図していません
+   - 緊急事態や生命に関わる状況では、システムに依存せず適切な医療プロトコルに従ってください
+
+3. **データの正確性と可用性**
+   - システムの可用性やデータの正確性について、いかなる保証も提供されません
+   - 重要な医療情報については、必ずバックアップシステムや代替手段を用意してください
+
+4. **規制要件の遵守**
+   - 各医療機関は、適用される医療法規、プライバシー法規、その他の規制要件を遵守する責任があります
+   - システムの使用に際しては、所轄官庁の承認や認可が必要な場合があります
+
+5. **セキュリティと個人情報保護**
+   - 医療データの取り扱いには最新の注意を払い、適切なセキュリティ対策を実施してください
+   - 患者の個人情報保護に関する法的要件を必ず遵守してください
+
+### 使用者の責任
+
+このソフトウェアを使用する医療機関および医療従事者は、以下の責任を負います：
+
+- 適切なリスク評価と導入計画の策定
+- 医療スタッフへの適切な研修の実施
+- 定期的なシステムの点検と保守
+- 緊急時対応計画の策定
+- 適用される法規制の遵守
+
+### 緊急連絡先
+
+システムに関する緊急事態が発生した場合：
+1. まず適切な医療プロトコルに従ってください
+2. システム管理者に連絡してください
+3. 必要に応じてベンダーサポートに連絡してください
+
+本免責事項は、MIT Licenseの条項に加えて適用されるものです。
