@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScriptテスト</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .button { background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .danger { background: #e74c3c; }
+        #response { margin-top: 20px; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>JavaScriptテスト</h1>
+    <button class="button danger" onclick="testAlert()">デバッグテスト</button>
+    <div id="response">初期メッセージ</div>
+    
+    <script>
+        console.log('JavaScriptテスト開始');
+        
+        function testAlert() {
+            alert('テスト成功！');
+            console.log('ボタンクリック成功');
+        }
+        
+        window.onload = function() {
+            console.log('ページ読み込み完了');
+            document.getElementById('response').innerHTML = '<h3 style="color: green;">JavaScript正常動作中</h3>';
+        };
+    </script>
+</body>
+</html>

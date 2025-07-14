@@ -1,23 +1,18 @@
 """
-Django settings for shiftmaster project - Minimal Configuration
+Base settings for ShiftMaster project
 """
 
 import os
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
 
-# 📁 ベースディレクトリ
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# 🔐 セキュリティキー
-SECRET_KEY = "django-insecure-j!f*hmy)6(th389zzib8(@xho*99%5e+ju%&h)&0@#ssc50&fd"
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
-# 🔧 デバッグモード
-DEBUG = True
-
-# 🌐 ホスト許可設定
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
-
-# 📦 アプリケーション定義（ミニマル構成）
+# Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -28,7 +23,6 @@ INSTALLED_APPS = [
     "shifts",
 ]
 
-# 🧱 ミドルウェア
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -41,7 +35,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "shiftmaster.urls"
 
-# 🎨 テンプレート設定（シンプル版）
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -60,15 +53,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "shiftmaster.wsgi.application"
 
-# 🗃️ データベース（SQLite）
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-# 🔐 パスワードバリデーション
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -78,22 +63,62 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# 🌍 ロケール
+# Internationalization
 LANGUAGE_CODE = "ja"
 TIME_ZONE = "Asia/Tokyo"
 USE_I18N = True
 USE_TZ = True
 
-# 📂 静的ファイル
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# 🔐 認証
+# Authentication
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 
-# ⚙️ モデル自動フィールド型
+# Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# 📋 ログ設定無効化（一時的）
-LOGGING_CONFIG = None
+# Logging configuration
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": BASE_DIR / "logs" / "django.log",
+            "maxBytes": 1024 * 1024 * 15,  # 15MB
+            "backupCount": 10,
+            "formatter": "verbose",
+        },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "shifts": {
+            "handlers": ["file", "console"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}

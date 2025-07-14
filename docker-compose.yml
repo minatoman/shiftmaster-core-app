@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   web:
@@ -8,21 +8,32 @@ services:
     volumes:
       - .:/app
     environment:
-      - DEBUG=1
-      - DJANGO_SETTINGS_MODULE=ShiftMaster.settings
+      - DJANGO_ENV=development
+      - DJANGO_SETTINGS_MODULE=shiftmaster.settings
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/shiftmaster
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
+      - redis
 
   db:
-    image: postgres:13
+    image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_DB=ShiftMaster
+      - POSTGRES_DB=shiftmaster
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   postgres_data:
+  redis_data:

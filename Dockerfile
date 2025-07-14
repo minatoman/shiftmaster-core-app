@@ -64,18 +64,12 @@ CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 FROM dependencies as production
 
 # Copy application code
-COPY . /app/
+COPY --chown=django:django . /app/
 
-# Install gunicorn for production
-RUN pip install --no-cache-dir gunicorn
-
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Install production dependencies
+RUN pip install --no-cache-dir gunicorn psycopg2-binary
 
 # Change ownership to django user
-RUN chown -R django:django /app
-
-# Switch to django user
 USER django
 
 # Expose port
@@ -83,14 +77,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/', timeout=10)" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/', timeout=10)" || exit 1
 
 # Production command
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "shiftmaster.wsgi:application"]
-RUN python manage.py collectstatic --noinput || echo "No static files to collect"
-
-# ポート公開
-EXPOSE 8000
-
-# アプリケーション起動
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

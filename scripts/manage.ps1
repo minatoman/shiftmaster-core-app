@@ -4,18 +4,18 @@
 # ============================================
 
 param(
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [ValidateSet("start", "stop", "restart", "logs", "backup", "restore", "update", "shell", "test", "status", "help")]
     [string]$Action = "help",
     
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [ValidateSet("dev", "prod")]
     [string]$Environment = "dev",
     
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [string]$Service = "",
     
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [string]$BackupFile = ""
 )
 
@@ -64,7 +64,8 @@ function Show-Help {
 function Get-ComposeFile {
     if ($Environment -eq "prod") {
         return "docker-compose.prod.yml"
-    } else {
+    }
+    else {
         return "docker-compose.dev.yml"
     }
 }
@@ -75,7 +76,8 @@ function Start-Services {
     
     if ($Environment -eq "dev") {
         docker-compose -f $composeFile up -d
-    } else {
+    }
+    else {
         # 本番環境では環境変数ファイルをチェック
         if (-not (Test-Path ".env")) {
             Write-ColorOutput "❌ .envファイルが見つかりません。.env.exampleを参考に作成してください。" $Red
@@ -107,7 +109,8 @@ function Show-Logs {
     if ($Service) {
         Write-ColorOutput "📋 ログ表示: $Service" $Cyan
         docker-compose -f $composeFile logs -f $Service
-    } else {
+    }
+    else {
         Write-ColorOutput "📋 全サービスログ表示" $Cyan
         docker-compose -f $composeFile logs -f
     }
@@ -128,7 +131,8 @@ function Backup-Database {
     if ($Environment -eq "prod") {
         # PostgreSQLバックアップ
         docker-compose -f docker-compose.prod.yml exec -T db pg_dump -U shiftmaster_user shiftmaster > $backupFile
-    } else {
+    }
+    else {
         # SQLiteバックアップ
         Copy-Item "db.sqlite3" "$backupDir/shiftmaster_backup_$timestamp.sqlite3" -ErrorAction SilentlyContinue
         $backupFile = "$backupDir/shiftmaster_backup_$timestamp.sqlite3"
@@ -160,7 +164,8 @@ function Restore-Database {
     if ($Environment -eq "prod") {
         # PostgreSQL復元
         Get-Content $BackupFile | docker-compose -f docker-compose.prod.yml exec -T db psql -U shiftmaster_user -d shiftmaster
-    } else {
+    }
+    else {
         # SQLite復元
         Copy-Item $BackupFile "db.sqlite3" -Force
     }
@@ -206,7 +211,8 @@ function Get-ServiceStatus {
     if ($Environment -eq "dev") {
         Write-Host "  アプリケーション: http://localhost:8000"
         Write-Host "  管理画面: http://localhost:8000/admin/"
-    } else {
+    }
+    else {
         Write-Host "  アプリケーション: https://localhost"
         Write-Host "  管理画面: https://localhost/admin/"
     }

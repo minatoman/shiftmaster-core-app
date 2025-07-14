@@ -4,7 +4,7 @@
 # ============================================
 
 param(
-    [Parameter(Mandatory=$false)]
+    [Parameter(Mandatory = $false)]
     [string]$CommitMessage = "feat: Add comprehensive Docker production environment setup"
 )
 
@@ -121,11 +121,13 @@ try {
         
         Write-ColorOutput "📚 詳細な運用手順はDEPLOYMENT_GUIDE.mdを参照してください" $Green
         
-    } else {
+    }
+    else {
         Write-ColorOutput "ℹ️ コミット対象の変更がありません" $Yellow
     }
     
-} catch {
+}
+catch {
     Write-ColorOutput "❌ エラーが発生しました: $($_.Exception.Message)" $Red
     exit 1
 }

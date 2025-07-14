@@ -3,7 +3,7 @@
 # SQLite + Hot Reload + Debug Tools
 # ============================================
 
-version: '3.8'
+version: "3.8"
 
 services:
   # === Django Development Server ===
@@ -47,11 +47,11 @@ services:
     volumes:
       - dev_postgres_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"  # Different port to avoid conflicts
+      - "5433:5432" # Different port to avoid conflicts
     networks:
       - shiftmaster_dev_network
     profiles:
-      - with-db  # Optional service (use with --profile with-db)
+      - with-db # Optional service (use with --profile with-db)
 
   # === Redis for Development (Optional) ===
   redis:
@@ -59,11 +59,11 @@ services:
     container_name: shiftmaster_dev_redis
     restart: unless-stopped
     ports:
-      - "6380:6379"  # Different port to avoid conflicts
+      - "6380:6379" # Different port to avoid conflicts
     networks:
       - shiftmaster_dev_network
     profiles:
-      - with-redis  # Optional service (use with --profile with-redis)
+      - with-redis # Optional service (use with --profile with-redis)
 
   # === MailHog (Email Testing) ===
   mailhog:
@@ -71,12 +71,12 @@ services:
     container_name: shiftmaster_mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"  # SMTP port
-      - "8025:8025"  # Web UI port
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI port
     networks:
       - shiftmaster_dev_network
     profiles:
-      - with-mail  # Optional service for email testing
+      - with-mail # Optional service for email testing
 
 volumes:
   dev_postgres_data:
